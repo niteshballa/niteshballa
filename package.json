@@ -1,6 +1,7 @@
 {
   "name": "nitesh-portfolio",
   "version": "0.1.0",
+  "homepage": "https://niteshballa.github.io/niteshballa",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
