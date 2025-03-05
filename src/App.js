@@ -84,8 +84,18 @@ const colorizeOutput = (output) => {
 };
 
 const App = () => {
+  // Enhanced Loading state that properly handles the new terminal loader
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // This is for the main terminal content loading
+
+  // Loader animation states
+  const [textOutput, setTextOutput] = useState([]);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [commandIndex, setCommandIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [loadChar, setLoadChar] = useState(0);
+
   // State management
-  const [isLoading, setIsLoading] = useState(true);
   const [commandHistory, setCommandHistory] = useState([]);
   const [commandHistoryIndex, setCommandHistoryIndex] = useState(-1);
   const [currentInput, setCurrentInput] = useState('');
@@ -99,6 +109,50 @@ const App = () => {
   const [lastKeyPressed, setLastKeyPressed] = useState(null);
   const [lastTabPressTime, setLastTabPressTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+
+  // ASCII art logo for loader
+  const asciiLogo = [
+    '   ███╗   ██╗██╗████████╗███████╗███████╗██╗  ██╗',
+    '   ████╗  ██║██║╚══██╔══╝██╔════╝██╔════╝██║  ██║',
+    '   ██╔██╗ ██║██║   ██║   █████╗  ███████╗███████║',
+    '   ██║╚██╗██║██║   ██║   ██╔══╝  ╚════██║██╔══██║',
+    '   ██║ ╚████║██║   ██║   ███████╗███████║██║  ██║',
+    '   ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚═╝  ╚═╝',
+  ];
+
+  // Loading commands sequence
+  const loadingCommands = [
+    'ssh -i credentials nitesh@portfolio.dev'
+  ];
+
+  // Command responses
+  const commandResponses = [
+    [
+      '> System initialization sequence started...',
+      '> System core initialized successfully'
+    ],
+    [
+      '> Mounting portfolio filesystem...',
+      '> /dev/skills mounted at /mnt/portfolio',
+      '> Checking filesystem integrity... OK'
+    ],
+    [
+      '> Starting portfolio services...',
+      '> Service: frontend-experience [STARTED]',
+      '> Service: backend-systems [STARTED]',
+      '> Service: devops-pipeline [STARTED]',
+      '> All services running'
+    ],
+    [
+      '> Establishing encrypted connection...',
+      '> Verifying credentials... success',
+      '> Welcome to Nitesh\'s portfolio environment!',
+      '> Launching interface...'
+    ]
+  ];
+
+  // Magic 8-bit style loading characters
+  const loadingChars = ['▰', '▱'];
 
   const inputRef = useRef(null);
   const terminalRef = useRef(null);
@@ -153,6 +207,49 @@ const App = () => {
     { name: 'LinkedIn', icon: <Linkedin size={16} />, url: 'https://linkedin.com/in/username' },
     { name: 'Email', icon: <Mail size={16} />, url: 'mailto:email@example.com' }
   ];
+
+  // Loader animation functions
+  const typeCommand = (command, stepIndex) => {
+    let i = 0;
+    setTextOutput(prev => [...prev, { text: '', type: 'command' }]);
+
+    const interval = setInterval(() => {
+      i++;
+      setTextOutput(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { text: command.substring(0, i), type: 'command' };
+        return updated;
+      });
+
+      if (i >= command.length) {
+        clearInterval(interval);
+        setTimeout(() => {
+          displayCommandResponse(stepIndex);
+        }, 100);
+      }
+    }, 8);
+  };
+
+  const displayCommandResponse = (stepIndex) => {
+    const responses = commandResponses[stepIndex];
+    let lineIndex = 0;
+
+    const showNextLine = () => {
+      if (lineIndex < responses.length) {
+        setTextOutput(prev => [...prev, { text: responses[lineIndex], type: 'response' }]);
+        lineIndex++;
+        setTimeout(showNextLine, 80);
+      } else {
+        setTimeout(() => {
+          setCommandIndex(prev => prev + 1);
+          setShowPrompt(true);
+          setProgress(prev => prev + (100 / loadingCommands.length));
+        }, 100);
+      }
+    };
+
+    showNextLine();
+  };
 
   // Terminal commands implementation
   const commands = {
@@ -506,37 +603,77 @@ const App = () => {
   }, []);
 
   const hasInitialized = useRef(false);
-  // Initial welcome sequence
+
+  // Execute loading commands in sequence
   useEffect(() => {
-    if (!hasInitialized.current) {
-      const loadingSequence = async () => {
-        // Clear any existing command history to ensure we don't get duplicates
-        setCommandHistory([]);
+    if (initialLoading && commandIndex < loadingCommands.length) {
+      if (showPrompt) {
+        setTimeout(() => {
+          setShowPrompt(false);
+          typeCommand(loadingCommands[commandIndex], commandIndex);
+        }, 200);
+      }
+    }
+  }, [commandIndex, showPrompt, initialLoading]);
 
-        // Create welcome message with a single instance of each message
-        const welcomeMessage = [
-          { type: 'input', content: 'cat welcome.txt' },
-          { type: 'output', content: colorizeOutput(fileSystem['~'].content['welcome.txt'].content) }
-        ];
+  // Setup loading animation sequence
+  useEffect(() => {
+    if (initialLoading) {
+      // Start loading character animation
+      const loadingInterval = setInterval(() => {
+        setLoadChar(c => (c + 1) % loadingChars.length);
+      }, 200);
 
-        // Add each message one at a time with minimal delays
-        for (const msg of welcomeMessage) {
-          await new Promise(resolve => {
-            setTimeout(() => {
-              setCommandHistory(prev => [...prev, msg]);
-              resolve();
-            }, 150); // Reduced delay for faster startup
-          });
-        }
+      // Start command sequence
+      setTimeout(() => {
+        setShowPrompt(true);
+      }, 400);
 
-        setTimeout(() => setIsLoading(false), 100); // Reduced delay
+      // Auto-dismiss loader after commands complete
+      const timer = setTimeout(() => {
+        clearInterval(loadingInterval);
+        setInitialLoading(false);
+
+        // Start the actual terminal loading sequence after loader completes
+        setTimeout(() => {
+          runWelcomeSequence();
+        }, 200);
+      }, 3500);
+
+      return () => {
+        clearTimeout(timer);
+        clearInterval(loadingInterval);
       };
+    }
+  }, [initialLoading]);
 
-      // Run the loading sequence
-      loadingSequence();
+  // Initial welcome sequence
+  const runWelcomeSequence = async () => {
+    if (!hasInitialized.current) {
+      // Clear any existing command history to ensure we don't get duplicates
+      setCommandHistory([]);
+
+      // Create welcome message with a single instance of each message
+      const welcomeMessage = [
+        { type: 'input', content: 'cat welcome.txt' },
+        { type: 'output', content: colorizeOutput(fileSystem['~'].content['welcome.txt'].content) }
+      ];
+
+      // Add each message one at a time with minimal delays
+      for (const msg of welcomeMessage) {
+        await new Promise(resolve => {
+          setTimeout(() => {
+            setCommandHistory(prev => [...prev, msg]);
+            resolve();
+          }, 150); // Reduced delay for faster startup
+        });
+      }
+
+      setTimeout(() => setIsLoading(false), 100); // Reduced delay
+
       hasInitialized.current = true; // Mark as initialized
     }
-  }, []); // Empty dependency array ensures this only runs once
+  };
 
   // Theme management
   useEffect(() => {
@@ -560,7 +697,7 @@ const App = () => {
     if (terminalContentRef.current) {
       terminalContentRef.current.scrollTop = terminalContentRef.current.scrollHeight;
     }
-  }, [commandHistory]);
+  }, [commandHistory, textOutput]);
 
   // Show terminal on click if minimized
   const handleContainerClick = useCallback(() => {
@@ -854,19 +991,20 @@ const App = () => {
           height: windowSize.height
         }}
         transition={{
-          duration: 0.2, // Faster window transitions
+          duration: 1,
           type: "spring",
-          damping: 25, // More damping for crisper animation
-          stiffness: 400 // Higher stiffness for faster motion
+          damping: 25,
+          stiffness: 400
         }}
         drag={!isMinimized}
         dragMomentum={false}
-        dragElastic={0.05} // Less elasticity for more terminal-like feel
+        dragElastic={0.05}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         ref={terminalRef}
         dragConstraints={{ left: -1000, right: 1000, top: -500, bottom: 500 }}
       >
+        {/* Terminal UI framework - always visible */}
         <div className="terminal-titlebar">
           <div className="window-controls">
             <motion.div
@@ -917,12 +1055,101 @@ const App = () => {
           ))}
         </div>
 
+        {/* Terminal content area - shows either loading sequence or main content */}
         <div
           className="terminal-content"
           ref={terminalContentRef}
           onClick={() => inputRef.current?.focus()}
         >
-          {isLoading ? (
+          {initialLoading ? (
+            /* Loading animation inside the exact same terminal UI */
+            <div className="loading-animation">
+              {/* ASCII Logo */}
+              <motion.div
+                className="ascii-logo-container"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+              >
+                {asciiLogo.map((line, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: i * 0.05 }}
+                  >
+                    {line}
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {/* Loading Command Sequence - exactly like normal terminal */}
+              <div className="loader-command-history">
+                {/* System startup messages */}
+                <motion.div
+                  className="command-line system-startup"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <span>
+                    Portfolio Terminal <span className="system-version">v1.0.4</span> (64-bit)<br />
+                    Running on <span className="system-info">Terminal OS {new Date().getFullYear()}</span><br />
+                    <br />
+                    Initializing system...
+                  </span>
+                </motion.div>
+
+                {/* Command outputs */}
+                {textOutput.map((output, index) => (
+                  <motion.div
+                    key={index}
+                    className="command-line"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.7 }}
+                  >
+                    {output.type === 'command' && <span className="prompt">❯</span>}
+                    <span
+                      className={`command-${output.type}`}
+                    >
+                      {output.text}
+                    </span>
+                  </motion.div>
+                ))}
+
+                {/* Current command prompt */}
+                {showPrompt && (
+                  <div className="command-line">
+                    <span className="prompt">❯</span>
+                    <motion.span
+                      className="terminal-cursor"
+                      animate={{ opacity: [1, 0, 1] }}
+                      transition={{ repeat: Infinity, duration: 1 }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Progress bar at bottom of content */}
+              <div className="loader-progress-container">
+                <div className="loader-progress-info">
+                  <div>
+                    <span className="loader-char">{loadingChars[loadChar]}</span>
+                    Loading portfolio assets
+                  </div>
+                  <div>{Math.round(progress)}%</div>
+                </div>
+                <div className="loader-progress-bar">
+                  <motion.div
+                    className="loader-progress-fill"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 2 }}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : isLoading ? (
             <div className="command-history">
               {commandHistory.map((cmd, index) => (
                 <motion.div
@@ -930,7 +1157,7 @@ const App = () => {
                   className={`command-line ${cmd.type}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.1 }} // Faster animation
+                  transition={{ duration: 0.5 }}
                 >
                   {cmd.type === 'input' && <span className="prompt">❯</span>}
                   <span
