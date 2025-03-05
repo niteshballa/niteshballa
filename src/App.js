@@ -614,7 +614,7 @@ const App = () => {
         }, 200);
       }
     }
-  }, [commandIndex, showPrompt, initialLoading, loadingCommands]);
+  }, [commandIndex, showPrompt, initialLoading]);
 
   // Setup loading animation sequence
   useEffect(() => {
@@ -645,7 +645,7 @@ const App = () => {
         clearInterval(loadingInterval);
       };
     }
-  }, [initialLoading, loadingChars]);
+  }, [initialLoading]);
 
   // Initial welcome sequence
   const runWelcomeSequence = async () => {

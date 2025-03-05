@@ -1184,39 +1184,165 @@ body {
   color: var(--ctp-text);
 }
 
-/* Responsive Design */
+/* Enhanced Mobile Responsiveness */
+
+/* Base mobile improvements */
 @media (max-width: 768px) {
+
+  html,
+  body {
+    font-size: 14px;
+    /* Slightly smaller base font size for mobile */
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Improve terminal container for mobile */
   .terminal-container {
     width: 100%;
     height: 100vh;
+    max-height: -webkit-fill-available;
+    /* Fix for iOS height issues */
     margin: 0;
     border-radius: 0;
+    border: none;
   }
 
-  .projects-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .skills-grid {
-    grid-template-columns: 1fr;
-  }
-
+  /* Adjust content padding */
   .terminal-content {
     padding: 12px;
+    height: calc(100% - 70px);
+    /* Adjust for smaller header elements */
+  }
+
+  /* Better titlebar for mobile */
+  .terminal-titlebar {
+    padding: 6px 10px;
   }
 
   .terminal-title {
-    font-size: 12px;
+    font-size: 11px;
+    max-width: 150px;
+    /* Prevent title from taking too much space */
+  }
+
+  /* Improved tab appearance on mobile */
+  .terminal-tabs {
+    padding: 0 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling on iOS */
   }
 
   .terminal-tab {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 6px 10px;
+    font-size: 11px;
+    flex-shrink: 0;
+    /* Prevent tabs from shrinking */
+  }
+
+  /* Adjust window controls for easier tapping */
+  .window-controls {
+    gap: 6px;
   }
 
   .window-control {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Project cards for mobile */
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .project-card {
+    padding: 16px;
+  }
+
+  .project-title {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .project-description {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  /* Adjustments for tags and links */
+  .project-tags {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .tag {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  .project-links {
+    gap: 10px;
+  }
+
+  .project-link {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+
+  /* About section adjustments */
+  .about-content,
+  .contact-section {
+    padding: 16px;
+  }
+
+  .about-content h2,
+  .about-content h3,
+  .contact-section h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .about-content p,
+  .contact-section p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  /* Timeline adjustments */
+  .timeline {
+    padding-left: 20px;
+  }
+
+  .timeline-content {
+    padding: 12px;
+  }
+
+  .timeline-content h4 {
+    font-size: 14px;
+  }
+
+  /* Skills grid for mobile */
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .skill-item {
+    padding: 12px;
+  }
+
+  .skill-name {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  /* Social links for mobile */
+  .social-links {
+    gap: 12px;
   }
 
   .social-link {
@@ -1224,27 +1350,200 @@ body {
   }
 
   .social-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
   }
 
   .social-link-title {
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  .social-link-subtitle {
+    font-size: 10px;
+  }
+
+  /* Form elements for mobile */
+  .form-input,
+  .form-textarea,
+  .form-button {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .form-textarea {
+    min-height: 100px;
+  }
+
+  .form-label {
+    font-size: 12px;
   }
 }
 
+/* Extra small devices (phones) */
 @media (max-width: 480px) {
+
+  /* Further refinements for very small screens */
+  .terminal-content {
+    padding: 10px;
+  }
+
+  .prompt,
+  .command-input {
+    font-size: 13px;
+  }
+
+  .command-output,
+  .command-error {
+    padding-left: 16px;
+    font-size: 13px;
+  }
+
+  /* Adjust terminal tabs for very small screens */
   .terminal-tabs {
-    padding: 0 4px;
+    padding: 0 2px;
   }
 
   .terminal-tab {
-    padding: 6px 8px;
-    font-size: 11px;
+    padding: 5px 6px;
+    font-size: 10px;
+    gap: 4px;
   }
 
-  .contact-section {
-    padding: 16px;
+  .terminal-tab-icon {
+    transform: scale(0.8);
+  }
+
+  /* Project cards for very small screens */
+  .project-card {
+    padding: 14px;
+  }
+
+  /* Skills grid for very small screens */
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Improved touch targets for mobile */
+  .social-link,
+  .project-link,
+  .form-button,
+  .category-filter {
+    min-height: 44px;
+    /* Minimum Apple recommended touch target size */
+  }
+
+  /* Fix for input/form elements */
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  /* Ensure proper tap targets for links */
+  .project-link {
+    padding: 6px 10px;
+  }
+
+  /* Fix scrolling issues in terminal content */
+  .terminal-content {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* iPhone SE and other very small devices */
+@media (max-width: 375px) {
+  .window-controls {
+    gap: 4px;
+  }
+
+  .terminal-title {
+    font-size: 10px;
+    max-width: 120px;
+  }
+
+  .terminal-tab {
+    padding: 5px 4px;
+    font-size: 9px;
+  }
+
+  .social-link {
+    padding: 10px;
+  }
+
+  .social-link-title {
+    font-size: 12px;
+  }
+
+  .social-link-subtitle {
+    display: none;
+    /* Hide subtitles on very small screens */
+  }
+}
+
+/* Fix for iOS Safari viewport height issue */
+@supports (-webkit-touch-callout: none) {
+  .terminal-container {
+    height: -webkit-fill-available;
+  }
+
+  .terminal-content {
+    height: calc(100vh - 80px);
+    height: calc(-webkit-fill-available - 80px);
+  }
+}
+
+/* Improve input handling on mobile */
+@media (max-width: 768px) {
+  .current-input input {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Ensure better tap behavior */
+  input,
+  textarea,
+  button {
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  /* Fix for iOS zooming on input focus */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+
+    select,
+    textarea,
+    input {
+      font-size: 16px;
+      /* Prevents iOS zoom */
+    }
+  }
+
+  /* Fix for mobile keyboard appearing issues */
+  .current-input {
+    padding-bottom: 20vh;
+    /* Ensure room for keyboard */
+  }
+}
+
+/* Make links and buttons easier to tap on mobile */
+@media (max-width: 768px) {
+
+  .project-link,
+  .social-link,
+  .category-filter,
+  .form-button,
+  .window-control {
+    cursor: default;
+    /* Remove hover cursor on touch devices */
+  }
+
+  /* Ensure proper color contrast on dark mode mobile */
+  .dark .terminal-container {
+    background-color: var(--ctp-base);
+  }
+
+  /* Improve readability of command output on mobile */
+  .command-output,
+  .command-error {
+    word-break: break-word;
+    /* More natural word breaks */
   }
 }
 
