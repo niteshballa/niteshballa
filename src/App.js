@@ -557,7 +557,7 @@ const App = () => {
     }
 
     setLastKeyPressed(e.key);
-  }, [currentInput, commandHistory, commandHistoryIndex, isExecuting, executeCommand, commands, lastKeyPressed, lastTabPressTime]);
+  }, [currentInput, commandHistory, commandHistoryIndex, isExecuting, executeCommand, commands, lastKeyPressed, lastTabPressTime, getCommandSuggestions]);
 
   // Close the browser window
   const handleCloseWindow = useCallback(() => {
@@ -614,7 +614,7 @@ const App = () => {
         }, 200);
       }
     }
-  }, [commandIndex, showPrompt, initialLoading]);
+  }, [commandIndex, showPrompt, initialLoading, loadingCommands]);
 
   // Setup loading animation sequence
   useEffect(() => {
@@ -645,7 +645,7 @@ const App = () => {
         clearInterval(loadingInterval);
       };
     }
-  }, [initialLoading]);
+  }, [initialLoading, loadingChars]);
 
   // Initial welcome sequence
   const runWelcomeSequence = async () => {
