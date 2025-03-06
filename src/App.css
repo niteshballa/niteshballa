@@ -1547,118 +1547,103 @@ body {
   }
 }
 
-/* Terminal Loader Styling */
+/* Modern Loader Styles */
+.modern-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ctp-base);
+  z-index: 1000;
+  transition: opacity 0.6s ease-out;
+}
 
-/* Main container for the loading animation */
-.loading-animation {
+.modern-loader.fade-out {
+  opacity: 0;
+}
+
+.loader-content {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  max-width: 300px;
 }
 
-/* ASCII Logo container */
-.ascii-logo-container {
-  margin-bottom: 20px;
-  text-align: center;
+.loader-logo {
+  font-size: 72px;
+  font-weight: 700;
   color: var(--ctp-mauve);
-  white-space: pre;
-  line-height: 1.2;
-  font-family: monospace;
-  text-shadow: 0 0 8px rgba(203, 166, 247, 0.2);
-  padding: 10px 0;
+  margin-bottom: 40px;
+  position: relative;
+  animation: pulse-subtle 2s infinite ease-in-out;
 }
 
-/* Command styles specific for loader */
-.command-command {
-  color: var(--ctp-teal);
-  white-space: pre-wrap;
-  word-break: break-all;
+.loader-logo::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  background-color: var(--ctp-blue);
+  border-radius: 3px;
 }
 
-.command-response {
-  color: var(--ctp-text);
-  white-space: pre-wrap;
-  word-break: break-all;
+.loader-progress {
+  width: 100%;
 }
 
-/* Terminal cursor for loader */
-.terminal-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 15px;
-  background-color: var(--ctp-rosewater);
-  vertical-align: middle;
-}
-
-/* Progress section */
-.loader-progress-container {
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-
-.loader-progress-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 5px;
-  font-size: 12px;
-  color: var(--ctp-subtext0);
-}
-
-.loader-progress-bar {
-  height: 4px;
-  background: var(--ctp-surface0);
-  border-radius: 2px;
+.loader-bar-container {
+  height: 2px;
+  background-color: var(--ctp-surface1);
+  border-radius: 1px;
   overflow: hidden;
+  margin-bottom: 12px;
 }
 
-.loader-progress-fill {
+.loader-bar-fill {
   height: 100%;
   background: linear-gradient(to right, var(--ctp-blue), var(--ctp-mauve));
-  border-radius: 2px;
+  border-radius: 1px;
+  transition: width 0.2s ease-out;
 }
 
-.loader-char {
-  margin-right: 6px;
+.loader-percentage {
+  text-align: right;
+  font-size: 14px;
+  color: var(--ctp-subtext0);
+  font-weight: 500;
 }
 
-/* System startup message styling */
-.system-startup {
-  color: var(--ctp-text);
-  margin-bottom: 16px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--ctp-surface1);
-}
+/* Subtle pulse animation for the logo */
+@keyframes pulse-subtle {
 
-/* Highlight important parts in system messages */
-.system-info {
-  color: var(--ctp-sky);
-}
-
-.system-version {
-  color: var(--ctp-peach);
-}
-
-/* Slow animation classes to match your settings */
-.slow-fade-in {
-  animation: slowFadeIn 1s ease-out forwards;
-}
-
-@keyframes slowFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
+  0%,
+  100% {
     opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(0.98);
   }
 }
 
-/* Command history spacing for loader */
-.loader-command-history {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  overflow-y: auto;
+/* Media query for mobile */
+@media (max-width: 768px) {
+  .loader-logo {
+    font-size: 54px;
+    margin-bottom: 30px;
+  }
+
+  .loader-percentage {
+    font-size: 12px;
+  }
 }

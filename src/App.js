@@ -47,6 +47,58 @@ const availableCommands = {
   tab: { desc: 'Switch between tabs', usage: 'tab [tab name]' }
 };
 
+// Modern Loader Component
+const ModernLoader = ({ onLoadComplete }) => {
+  const [progress, setProgress] = useState(0);
+  const [fadeOut, setFadeOut] = useState(false);
+
+  useEffect(() => {
+    // Simulate loading progress
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        // Non-linear progress for realism
+        const increment = prev < 60 ? 2 : (prev < 85 ? 1 : 0.5);
+        const newProgress = prev + increment;
+
+        if (newProgress >= 100) {
+          clearInterval(progressInterval);
+
+          // Start fade-out animation
+          setFadeOut(true);
+
+          // Wait for fade-out animation then complete
+          setTimeout(() => {
+            if (onLoadComplete) onLoadComplete();
+          }, 600); // Match this with your CSS transition duration
+
+          return 100;
+        }
+        return newProgress;
+      });
+    }, 50);
+
+    return () => clearInterval(progressInterval);
+  }, [onLoadComplete]);
+
+  return (
+    <div className={`modern-loader ${fadeOut ? 'fade-out' : ''}`}>
+      <div className="loader-content">
+        <div className="loader-logo">N</div>
+
+        <div className="loader-progress">
+          <div className="loader-bar-container">
+            <div
+              className="loader-bar-fill"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <div className="loader-percentage">{Math.round(progress)}%</div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Updated colorizeOutput function
 const colorizeOutput = (output) => {
   // Early return if not a string
@@ -84,16 +136,8 @@ const colorizeOutput = (output) => {
 };
 
 const App = () => {
-  // Enhanced Loading state that properly handles the new terminal loader
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(true); // This is for the main terminal content loading
-
-  // Loader animation states
-  const [textOutput, setTextOutput] = useState([]);
-  const [showPrompt, setShowPrompt] = useState(false);
-  const [commandIndex, setCommandIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [loadChar, setLoadChar] = useState(0);
+  // Loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   // State management
   const [commandHistory, setCommandHistory] = useState([]);
@@ -110,53 +154,10 @@ const App = () => {
   const [lastTabPressTime, setLastTabPressTime] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
-  // ASCII art logo for loader
-  const asciiLogo = [
-    '   ███╗   ██╗██╗████████╗███████╗███████╗██╗  ██╗',
-    '   ████╗  ██║██║╚══██╔══╝██╔════╝██╔════╝██║  ██║',
-    '   ██╔██╗ ██║██║   ██║   █████╗  ███████╗███████║',
-    '   ██║╚██╗██║██║   ██║   ██╔══╝  ╚════██║██╔══██║',
-    '   ██║ ╚████║██║   ██║   ███████╗███████║██║  ██║',
-    '   ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚═╝  ╚═╝',
-  ];
-
-  // Loading commands sequence
-  const loadingCommands = [
-    'ssh -i credentials nitesh@portfolio.dev'
-  ];
-
-  // Command responses
-  const commandResponses = [
-    [
-      '> System initialization sequence started...',
-      '> System core initialized successfully'
-    ],
-    [
-      '> Mounting portfolio filesystem...',
-      '> /dev/skills mounted at /mnt/portfolio',
-      '> Checking filesystem integrity... OK'
-    ],
-    [
-      '> Starting portfolio services...',
-      '> Service: frontend-experience [STARTED]',
-      '> Service: backend-systems [STARTED]',
-      '> Service: devops-pipeline [STARTED]',
-      '> All services running'
-    ],
-    [
-      '> Establishing encrypted connection...',
-      '> Verifying credentials... success',
-      '> Welcome to Nitesh\'s portfolio environment!',
-      '> Launching interface...'
-    ]
-  ];
-
-  // Magic 8-bit style loading characters
-  const loadingChars = ['▰', '▱'];
-
   const inputRef = useRef(null);
   const terminalRef = useRef(null);
   const terminalContentRef = useRef(null);
+  const hasInitialized = useRef(false);
 
   // Terminal tabs configuration
   const tabs = [
@@ -208,49 +209,6 @@ const App = () => {
     { name: 'Email', icon: <Mail size={16} />, url: 'mailto:email@example.com' }
   ];
 
-  // Loader animation functions
-  const typeCommand = (command, stepIndex) => {
-    let i = 0;
-    setTextOutput(prev => [...prev, { text: '', type: 'command' }]);
-
-    const interval = setInterval(() => {
-      i++;
-      setTextOutput(prev => {
-        const updated = [...prev];
-        updated[updated.length - 1] = { text: command.substring(0, i), type: 'command' };
-        return updated;
-      });
-
-      if (i >= command.length) {
-        clearInterval(interval);
-        setTimeout(() => {
-          displayCommandResponse(stepIndex);
-        }, 100);
-      }
-    }, 8);
-  };
-
-  const displayCommandResponse = (stepIndex) => {
-    const responses = commandResponses[stepIndex];
-    let lineIndex = 0;
-
-    const showNextLine = () => {
-      if (lineIndex < responses.length) {
-        setTextOutput(prev => [...prev, { text: responses[lineIndex], type: 'response' }]);
-        lineIndex++;
-        setTimeout(showNextLine, 80);
-      } else {
-        setTimeout(() => {
-          setCommandIndex(prev => prev + 1);
-          setShowPrompt(true);
-          setProgress(prev => prev + (100 / loadingCommands.length));
-        }, 100);
-      }
-    };
-
-    showNextLine();
-  };
-
   // Terminal commands implementation
   const commands = {
     help: () => {
@@ -272,7 +230,7 @@ const App = () => {
       };
     },
 
-    // Updated LS command implementation
+    // LS command implementation
     ls: (args) => {
       const path = args[0] || currentDirectory;
       const dir = getDirectoryFromPath(path);
@@ -602,74 +560,14 @@ const App = () => {
     setIsMinimized(true);
   }, []);
 
-  const hasInitialized = useRef(false);
-
-  // Execute loading commands in sequence
-  useEffect(() => {
-    if (initialLoading && commandIndex < loadingCommands.length) {
-      if (showPrompt) {
-        setTimeout(() => {
-          setShowPrompt(false);
-          typeCommand(loadingCommands[commandIndex], commandIndex);
-        }, 200);
-      }
-    }
-  }, [commandIndex, showPrompt, initialLoading]);
-
-  // Setup loading animation sequence
-  useEffect(() => {
-    if (initialLoading) {
-      // Start loading character animation
-      const loadingInterval = setInterval(() => {
-        setLoadChar(c => (c + 1) % loadingChars.length);
-      }, 200);
-
-      // Start command sequence
-      setTimeout(() => {
-        setShowPrompt(true);
-      }, 400);
-
-      // Auto-dismiss loader after commands complete
-      const timer = setTimeout(() => {
-        clearInterval(loadingInterval);
-        setInitialLoading(false);
-
-        // Start the actual terminal loading sequence after loader completes
-        setTimeout(() => {
-          runWelcomeSequence();
-        }, 200);
-      }, 3500);
-
-      return () => {
-        clearTimeout(timer);
-        clearInterval(loadingInterval);
-      };
-    }
-  }, [initialLoading]);
-
   // Initial welcome sequence
   const runWelcomeSequence = async () => {
     if (!hasInitialized.current) {
-      // Clear any existing command history to ensure we don't get duplicates
-      setCommandHistory([]);
-
-      // Create welcome message with a single instance of each message
-      const welcomeMessage = [
+      // Set the welcome message directly
+      setCommandHistory([
         { type: 'input', content: 'cat welcome.txt' },
         { type: 'output', content: colorizeOutput(fileSystem['~'].content['welcome.txt'].content) }
-      ];
-
-      // Add each message one at a time with minimal delays
-      for (const msg of welcomeMessage) {
-        await new Promise(resolve => {
-          setTimeout(() => {
-            setCommandHistory(prev => [...prev, msg]);
-            resolve();
-          }, 150); // Reduced delay for faster startup
-        });
-      }
-
-      setTimeout(() => setIsLoading(false), 100); // Reduced delay
+      ]);
 
       hasInitialized.current = true; // Mark as initialized
     }
@@ -679,6 +577,12 @@ const App = () => {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  // Handle loading completion
+  const handleLoadingComplete = useCallback(() => {
+    setIsLoading(false);
+    runWelcomeSequence();
+  }, []);
 
   // Focus management
   useEffect(() => {
@@ -697,7 +601,7 @@ const App = () => {
     if (terminalContentRef.current) {
       terminalContentRef.current.scrollTop = terminalContentRef.current.scrollHeight;
     }
-  }, [commandHistory, textOutput]);
+  }, [commandHistory]);
 
   // Show terminal on click if minimized
   const handleContainerClick = useCallback(() => {
@@ -978,200 +882,98 @@ const App = () => {
 
   return (
     <div className="app-container" onClick={handleContainerClick}>
-      <motion.div
-        className={`terminal-container ${isMinimized ? 'minimized' : ''} ${isDragging ? 'dragging' : ''}`}
-        initial={{ opacity: 0, y: 50 }}
-        animate={{
-          opacity: isMinimized ? 0.6 : 1,
-          y: isMinimized ? window.innerHeight - 80 : 0,
-          scale: isMinimized ? 0.8 : 1,
-          x: windowPosition.x,
-          y: windowPosition.y,
-          width: windowSize.width,
-          height: windowSize.height
-        }}
-        transition={{
-          duration: 1,
-          type: "spring",
-          damping: 25,
-          stiffness: 400
-        }}
-        drag={!isMinimized}
-        dragMomentum={false}
-        dragElastic={0.05}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        ref={terminalRef}
-        dragConstraints={{ left: -1000, right: 1000, top: -500, bottom: 500 }}
-      >
-        {/* Terminal UI framework - always visible */}
-        <div className="terminal-titlebar">
-          <div className="window-controls">
-            <motion.div
-              className="window-control control-close"
-              onClick={handleCloseWindow}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <X size={8} />
-            </motion.div>
-            <motion.div
-              className="window-control control-minimize"
-              onClick={handleMinimize}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Minus size={8} />
-            </motion.div>
-            <motion.div
-              className="window-control control-maximize"
-              onClick={handleResetPosition}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Maximize2 size={8} />
-            </motion.div>
-          </div>
-          <div className="terminal-title">
-            nitesh@portfolio: {currentDirectory}
-          </div>
-          <div className="theme-toggle" onClick={() => commands.theme()}>
-            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
-          </div>
-        </div>
-
-        <div className="terminal-tabs">
-          {tabs.map(tab => (
-            <motion.div
-              key={tab.id}
-              className={`terminal-tab ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-              whileHover={{ backgroundColor: 'var(--ctp-surface0)' }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="terminal-tab-icon">{tab.icon}</span>
-              {tab.title}
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Terminal content area - shows either loading sequence or main content */}
-        <div
-          className="terminal-content"
-          ref={terminalContentRef}
-          onClick={() => inputRef.current?.focus()}
+      {isLoading ? (
+        // Show the modern loader while loading
+        <ModernLoader onLoadComplete={handleLoadingComplete} />
+      ) : (
+        // Show the terminal interface after loading
+        <motion.div
+          className={`terminal-container ${isMinimized ? 'minimized' : ''} ${isDragging ? 'dragging' : ''}`}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{
+            opacity: isMinimized ? 0.6 : 1,
+            y: isMinimized ? window.innerHeight - 80 : 0,
+            scale: isMinimized ? 0.8 : 1,
+            x: windowPosition.x,
+            y: windowPosition.y,
+            width: windowSize.width,
+            height: windowSize.height
+          }}
+          transition={{
+            duration: 1,
+            type: "spring",
+            damping: 25,
+            stiffness: 400
+          }}
+          drag={!isMinimized}
+          dragMomentum={false}
+          dragElastic={0.05}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          ref={terminalRef}
+          dragConstraints={{ left: -1000, right: 1000, top: -500, bottom: 500 }}
         >
-          {initialLoading ? (
-            /* Loading animation inside the exact same terminal UI */
-            <div className="loading-animation">
-              {/* ASCII Logo */}
+          {/* Terminal UI framework - always visible */}
+          <div className="terminal-titlebar">
+            <div className="window-controls">
               <motion.div
-                className="ascii-logo-container"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1 }}
+                className="window-control control-close"
+                onClick={handleCloseWindow}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
-                {asciiLogo.map((line, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: i * 0.05 }}
-                  >
-                    {line}
-                  </motion.div>
-                ))}
+                <X size={8} />
               </motion.div>
-
-              {/* Loading Command Sequence - exactly like normal terminal */}
-              <div className="loader-command-history">
-                {/* System startup messages */}
-                <motion.div
-                  className="command-line system-startup"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <span>
-                    Portfolio Terminal <span className="system-version">v1.0.4</span> (64-bit)<br />
-                    Running on <span className="system-info">Terminal OS {new Date().getFullYear()}</span><br />
-                    <br />
-                    Initializing system...
-                  </span>
-                </motion.div>
-
-                {/* Command outputs */}
-                {textOutput.map((output, index) => (
-                  <motion.div
-                    key={index}
-                    className="command-line"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.7 }}
-                  >
-                    {output.type === 'command' && <span className="prompt">❯</span>}
-                    <span
-                      className={`command-${output.type}`}
-                    >
-                      {output.text}
-                    </span>
-                  </motion.div>
-                ))}
-
-                {/* Current command prompt */}
-                {showPrompt && (
-                  <div className="command-line">
-                    <span className="prompt">❯</span>
-                    <motion.span
-                      className="terminal-cursor"
-                      animate={{ opacity: [1, 0, 1] }}
-                      transition={{ repeat: Infinity, duration: 1 }}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Progress bar at bottom of content */}
-              <div className="loader-progress-container">
-                <div className="loader-progress-info">
-                  <div>
-                    <span className="loader-char">{loadingChars[loadChar]}</span>
-                    Loading portfolio assets
-                  </div>
-                  <div>{Math.round(progress)}%</div>
-                </div>
-                <div className="loader-progress-bar">
-                  <motion.div
-                    className="loader-progress-fill"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 2 }}
-                  />
-                </div>
-              </div>
+              <motion.div
+                className="window-control control-minimize"
+                onClick={handleMinimize}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Minus size={8} />
+              </motion.div>
+              <motion.div
+                className="window-control control-maximize"
+                onClick={handleResetPosition}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Maximize2 size={8} />
+              </motion.div>
             </div>
-          ) : isLoading ? (
-            <div className="command-history">
-              {commandHistory.map((cmd, index) => (
-                <motion.div
-                  key={index}
-                  className={`command-line ${cmd.type}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  {cmd.type === 'input' && <span className="prompt">❯</span>}
-                  <span
-                    className={`command-${cmd.type}`}
-                    dangerouslySetInnerHTML={{ __html: cmd.content }}
-                  />
-                </motion.div>
-              ))}
+            <div className="terminal-title">
+              nitesh@portfolio: {currentDirectory}
             </div>
-          ) : (
-            renderContent()
-          )}
-        </div>
-      </motion.div>
+            <div className="theme-toggle" onClick={() => commands.theme()}>
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            </div>
+          </div>
+
+          <div className="terminal-tabs">
+            {tabs.map(tab => (
+              <motion.div
+                key={tab.id}
+                className={`terminal-tab ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+                whileHover={{ backgroundColor: 'var(--ctp-surface0)' }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="terminal-tab-icon">{tab.icon}</span>
+                {tab.title}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Terminal content area */}
+          <div
+            className="terminal-content"
+            ref={terminalContentRef}
+            onClick={() => inputRef.current?.focus()}
+          >
+            {renderContent()}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 };
