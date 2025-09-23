@@ -168,7 +168,7 @@ const config: SiteConfig = {
   // IMPORTANT: Update giscus.json in the root of the project with your own website URL
   // If you don't want to use Giscus, set this to undefined.
   giscus: {
-    repo: 'niteshballa/nitesh-blog',
+    repo: 'niteshballa/niteshballa',
     repoId: 'R_kgDOPNnBig', // You'll need to update this with your actual repo ID
     category: 'General',
     categoryId: 'DIC_kwDOPNnBis4CteOc', // You'll need to update this with your actual category ID
