@@ -169,9 +169,9 @@ const config: SiteConfig = {
   // If you don't want to use Giscus, set this to undefined.
   giscus: {
     repo: 'niteshballa/niteshballa',
-    repoId: 'R_kgDOPNnBig', // You'll need to update this with your actual repo ID
+    repoId: 'R_kgDOOC_dFA',
     category: 'General',
-    categoryId: 'DIC_kwDOPNnBis4CteOc', // You'll need to update this with your actual category ID
+    categoryId: 'DIC_kwDOOC_dFM4Cvz0w',
     reactionsEnabled: true, // Enable reactions on post itself
   },
   // These are characters available for the character chat feature.
