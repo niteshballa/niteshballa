@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro'
+import { SOCIALS } from '../consts'
+---
+<Base title="About">
+  <h1 class="page-title">About</h1>
+  <div class="prose">
+    <p>
+      I'm <strong>Nitesh Balla</strong>, a <strong>Forward Deployed Engineer at
+      <a href="https://manif.ai">Manif</a></strong>, where we build the financial
+      infrastructure and control plane for agentic commerce. The work is to sit
+      close to customers, build against the specifics of their problem, and ship
+      systems that survive contact with production.
+    </p>
+
+    <h2>How I work</h2>
+    <p>
+      I'm drawn to the gap between what a product can do and what a customer
+      actually needs. That usually means writing code in the field, choosing which
+      corners to cut on purpose, and owning the result end to end. Most of what
+      I've shipped lives in payments, where the trade-offs are unforgiving and the
+      failure modes are public.
+    </p>
+
+    <h2>What I work with</h2>
+    <ul>
+      <li><strong>Backend</strong> — Rust, C++, Java, Python, Node.js</li>
+      <li><strong>Frontend</strong> — TypeScript, React, Next.js</li>
+      <li><strong>Cloud &amp; infra</strong> — AWS, Azure, Terraform, Docker, Kubernetes, CI/CD</li>
+      <li><strong>Data</strong> — PostgreSQL, MongoDB, Redis</li>
+      <li><strong>Domain</strong> — payment systems, PCI and ISO compliance</li>
+    </ul>
+
+    <h2>Before this</h2>
+    <p>
+      I led engineering at <strong>GreenBanana Group</strong> (Germany), working
+      remotely on financial products. Before that I was a product engineer at
+      <strong>Juspay</strong>, where I built payment systems and contributed to
+      <a href="https://github.com/juspay/hyperswitch">Hyperswitch</a>, the
+      open-source payment orchestrator.
+    </p>
+
+    <h2>Connect</h2>
+    <ul>
+      <li><a href={SOCIALS.github}>GitHub</a></li>
+      <li><a href={SOCIALS.linkedin}>LinkedIn</a></li>
+      <li><a href={`mailto:${SOCIALS.email}`}>{SOCIALS.email}</a></li>
+    </ul>
+    <p>Feel free to reach out to connect or discuss anything I write about.</p>
+  </div>
+</Base>

@@ -1,46 +1,32 @@
 ---
-import IconChevronsRight from '~/icons/chevrons-right.svg'
+import FormattedDate from './FormattedDate.astro'
+import readingTime from 'reading-time'
+import { excerpt } from '../lib/excerpt'
 import type { CollectionEntry } from 'astro:content'
-import { render } from 'astro:content'
-import Tags from '~/components/Tags.astro'
-import PostInfo from '~/components/PostInfo.astro'
-import type { Collation } from '~/types'
-import { TagsGroup } from '~/utils'
 
 interface Props {
   post: CollectionEntry<'posts'>
 }
-
 const { post } = Astro.props
-
-const { remarkPluginFrontmatter } = await render(post)
-const description = remarkPluginFrontmatter.description || post.data.description
-let tags: Collation<'posts'>[] | undefined
-if (post.data.tags && post.data.tags.length > 0) {
-  const tagsGroup = await TagsGroup.build()
-  tags = tagsGroup.matchMany(post.data.tags)
-}
-const samePage = Astro.url.pathname === `/posts/${post.id}`
-const articleLink = samePage ? `#${post.id}` : `/posts/${post.id}`
+const { title, published, tags } = post.data
+const minutes = Math.max(1, Math.round(readingTime(post.body ?? '').minutes))
+const summary = excerpt(post)
 ---
-
-<article class="w-full py-5 my-1 md:my-4 border-accent/10">
-  <h1 class="mb-3 text-2xl text-heading1 font-semibold">
-    <a href={articleLink}># {post.data.title}</a>
-  </h1>
-  <PostInfo post={post} class="mb-3 mt-4" />
-  {description && <p class="pl-0.5 my-4 text-base/7 text-foreground">{description}</p>}
-  {
-    tags && (
-      <div class="mb-6">
-        <Tags tags={tags} />
-      </div>
-    )
-  }
-  <div>
-    <a class="button flex items-center !pl-3.5" href={articleLink}>
-      {samePage ? 'Continue' : 'Read'}
-      <IconChevronsRight class="size-5 ml-2" />
-    </a>
-  </div>
+<article class="post-card">
+  <a class="post-card-link" href={`/posts/${post.id}`}>
+    <p class="post-card-meta">
+      <FormattedDate date={published} />
+      <span aria-hidden="true">·</span>
+      <span>{minutes} min read</span>
+    </p>
+    <h3 class="post-card-title">{title}</h3>
+    <p class="post-card-excerpt">{summary}</p>
+  </a>
+  {tags.length > 0 && (
+    <ul class="post-card-tags">
+      {tags.slice(0, 4).map((tag) => (
+        <li><a href={`/tags/${encodeURIComponent(tag)}`}>#{tag}</a></li>
+      ))}
+    </ul>
+  )}
 </article>

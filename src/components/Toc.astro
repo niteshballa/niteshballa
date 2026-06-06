@@ -1,0 +1,16 @@
+---
+import type { MarkdownHeading } from 'astro'
+
+interface Props {
+  headings: MarkdownHeading[]
+}
+// Only surface h2/h3 — deeper levels make the list noisy.
+const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3)
+---
+<ul class="toc-list">
+  {items.map((h) => (
+    <li class={`toc-item toc-d${h.depth}`}>
+      <a href={`#${h.slug}`}>{h.text}</a>
+    </li>
+  ))}
+</ul>

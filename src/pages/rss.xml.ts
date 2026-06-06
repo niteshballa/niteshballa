@@ -1,35 +1,22 @@
 import rss from '@astrojs/rss'
-import siteConfig from '~/site.config'
-import type { AstroGlobal } from 'astro'
-import { getSortedPosts } from '~/utils'
-import sanitizeHtml from 'sanitize-html'
-import MarkdownIt from 'markdown-it'
-const parser = new MarkdownIt()
+import { getCollection } from 'astro:content'
+import { SITE } from '../consts'
+import type { APIContext } from 'astro'
 
-// https://docs.astro.build/en/recipes/rss/
-export async function GET(_context: AstroGlobal) {
-  if (!siteConfig.site) {
-    console.warn(
-      'Site URL is required for RSS feed generation. Skipping RSS feed generation.',
-    )
-    return
-  }
-  const posts = await getSortedPosts()
+export async function GET(context: APIContext) {
+  const posts = (await getCollection('posts', (p) => !p.data.draft)).sort(
+    (a, b) => b.data.published.getTime() - a.data.published.getTime(),
+  )
+
   return rss({
-    stylesheet: '/rss.xsl',
-    title: siteConfig.title,
-    description: siteConfig.description,
-    site: siteConfig.site,
+    title: SITE.title,
+    description: SITE.description,
+    site: context.site ?? SITE.url,
     items: posts.map((post) => ({
       title: post.data.title,
+      description: post.data.description ?? '',
       pubDate: post.data.published,
-      description: post.data.description,
-      author: post.data.author || siteConfig.author,
       link: `/posts/${post.id}`,
-      content: sanitizeHtml(parser.render(post.body || ''), {
-        allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-      }),
     })),
-    trailingSlash: false,
   })
 }
