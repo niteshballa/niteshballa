@@ -1,0 +1,11 @@
+# Hugo
+/public/
+/resources/_gen/
+/.hugo_build.lock
+hugo_stats.json
+
+# OS / editor
+.DS_Store
+
+# Claude harness
+.claude/scheduled_tasks.lock

@@ -1,0 +1,55 @@
+baseURL = "https://nitesh.is-a.dev/"
+locale = "en-us"
+title = "Nitesh Balla"
+theme = "PaperMod"
+enableRobotsTXT = true
+enableInlineShortcodes = true
+
+[pagination]
+  pagerSize = 20
+
+[params]
+  defaultTheme = "auto"
+  ShowReadingTime = true
+  ShowShareButtons = false
+  ShowBreadCrumbs = false
+  ShowPostNavLinks = true
+  ShowCodeCopyButtons = true
+  ShowToc = true
+  TocOpen = false
+  ShowRssButtonInSectionTermList = true
+  description = "Forward Deployed Engineer at Manif — building the financial control plane for agentic commerce. Writing on payment systems and infrastructure."
+
+  [params.homeInfoParams]
+    Title = "Nitesh Balla"
+    Content = "Forward Deployed Engineer at [Manif](https://manif.ai) — building the financial control plane for agentic commerce. Previously Juspay ([Hyperswitch](https://github.com/juspay/hyperswitch)) and GreenBanana. I write about payment systems, infrastructure, and the trade-offs underneath."
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/niteshballa"
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/niteshballa/"
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:ballanitesh@gmail.com"
+  [[params.socialIcons]]
+    name = "rss"
+    url = "/index.xml"
+
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
+    weight = 10
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 20
+
+[markup]
+  [markup.highlight]
+    noClasses = false
+    style = "github"
