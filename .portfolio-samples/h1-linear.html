@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>H1 · Linear-dark — Nitesh Balla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:oklch(0.17 0.013 270);--panel:oklch(0.215 0.016 272);--ink:oklch(0.96 0.008 270);--muted:oklch(0.68 0.02 272);--hair:oklch(0.32 0.016 272);--accent:oklch(0.64 0.19 285);--sans:"Inter",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:clamp(1.6rem,5vw,4rem);position:relative;overflow:hidden}
+  body::before{content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:120vw;height:80vh;background:radial-gradient(ellipse at center,oklch(0.64 0.19 285 / .28),transparent 60%);pointer-events:none}
+  body::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.025;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .wrap{position:relative;z-index:2;width:100%;max-width:660px}
+  .pill{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.74rem;color:var(--muted);border:1px solid var(--hair);background:oklch(0.2 0.015 272 / .6);border-radius:99px;padding:.35rem .8rem;backdrop-filter:blur(8px)}
+  .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  h1{font-size:clamp(2.6rem,6vw,4.2rem);font-weight:600;letter-spacing:-.03em;line-height:1.02;margin:1.6rem 0 .9rem}
+  .role{font-family:var(--mono);font-size:.86rem;color:var(--accent);letter-spacing:.02em}
+  .lede{color:var(--muted);font-size:1.1rem;line-height:1.6;max-width:48ch;margin-top:1.2rem}
+  .cta{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:2rem}
+  .cta a{font-size:.9rem;font-weight:500;text-decoration:none;padding:.6rem 1.15rem;border-radius:9px;transition:transform .15s,box-shadow .2s,background .2s}
+  .cta .primary{background:var(--accent);color:oklch(0.16 0.02 285);box-shadow:0 8px 24px -8px var(--accent)}
+  .cta .primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px var(--accent)}
+  .cta .ghost{color:var(--ink);border:1px solid var(--hair);background:oklch(0.21 0.015 272 / .5)}
+  .cta .ghost:hover{border-color:var(--accent)}
+  .writing{margin-top:2.6rem;border-top:1px solid var(--hair);padding-top:1.2rem}
+  .writing .h{font-family:var(--mono);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+  .writing a{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;text-decoration:none;color:var(--ink);padding:.7rem 0;border-bottom:1px solid var(--hair);transition:color .15s,padding .15s}
+  .writing a:hover{color:var(--accent);padding-left:.3rem}
+  .writing a .m{font-family:var(--mono);font-size:.72rem;color:var(--muted);white-space:nowrap}
+</style></head>
+<body>
+<div class="wrap">
+  <span class="pill"><span class="dot"></span> Forward Deployed Engineer · Manif</span>
+  <h1>Nitesh Balla</h1>
+  <div class="role">payments · infrastructure · the unglamorous plumbing</div>
+  <p class="lede">I embed with customers and build the systems that move money and stay up, then write about the parts that don't make the changelog.</p>
+  <div class="cta"><a class="primary" href="#">Read the blog</a><a class="ghost" href="#">GitHub</a><a class="ghost" href="#">LinkedIn</a></div>
+  <div class="writing">
+    <div class="h">Recent</div>
+    <a href="#"><span>A practical guide to Loki multi-tenancy</span><span class="m">2025 · 14m</span></a>
+    <a href="#"><span>Understanding closures in JavaScript</span><span class="m">2025 · 9m</span></a>
+    <a href="#"><span>Idempotency keys, and the money they save</span><span class="m">draft</span></a>
+  </div>
+</div>
+</body></html>

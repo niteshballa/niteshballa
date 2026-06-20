@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>E4 · Essay — Nitesh Balla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:oklch(0.968 0.009 85);--ink:oklch(0.255 0.018 60);--muted:oklch(0.52 0.022 65);--hair:oklch(0.86 0.012 80);--accent:oklch(0.52 0.16 36);--serif:"Fraunces","Iowan Old Style",Georgia,serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;padding:clamp(2rem,7vw,6rem)}
+  .grain{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.05;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .essay{max-width:600px;margin-inline:auto}
+  .head{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.6rem;display:flex;justify-content:space-between}
+  p.intro{font-size:clamp(1.25rem,2.4vw,1.6rem);line-height:1.5;font-weight:330;letter-spacing:-.005em}
+  p.intro::first-letter{float:left;font-size:4.4em;line-height:.74;padding:.05em .12em 0 0;color:var(--accent);font-weight:380}
+  p.intro a{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--accent);transition:.15s}
+  p.intro a:hover{color:var(--accent)}
+  .meta{margin-top:2.4rem;padding-top:1.6rem;border-top:1px solid var(--hair);display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:1rem}
+  .meta .sign{font-size:1.5rem;font-style:italic;color:var(--ink)}
+  .meta .links{font-family:var(--mono);font-size:.78rem;display:flex;gap:1.1rem}
+  .meta .links a{color:var(--muted);text-decoration:none;transition:.15s}.meta .links a:hover{color:var(--accent)}
+  .more{margin-top:2.2rem;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+  .more a{display:inline-flex;justify-content:space-between;width:100%;color:var(--ink);text-decoration:none;padding:.5rem 0;border-bottom:1px solid var(--hair);transition:.15s}
+  .more a:hover{color:var(--accent);padding-left:.4rem}
+</style></head>
+<body>
+<div class="grain"></div>
+<div class="essay">
+  <div class="head"><span>Nitesh Balla</span><span>— engineering &amp; field notes</span></div>
+  <p class="intro">I'm a backend, infrastructure and payments engineer. I build the systems that move money and stay up, and I write here about the unglamorous parts: the failure modes, the trade-offs, the things you only learn at 2am. Start with the <a href="#">writing</a>, or find me on <a href="#">GitHub</a>.</p>
+  <div class="meta">
+    <span class="sign">Nitesh</span>
+    <span class="links"><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">RSS</a><a href="#">Email</a></span>
+  </div>
+  <div class="more">
+    <a href="#"><span>A practical guide to Loki multi-tenancy</span><span>2025 →</span></a>
+    <a href="#"><span>Understanding closures in JavaScript</span><span>2025 →</span></a>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,74 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { SITE } from "@/config";
+---
+
+<Layout title={`About | ${SITE.title}`}>
+  <main id="main-content" class="profile app-layout" data-backurl="/about">
+    <section class="head" transition:name="card-profile">
+      <span class="kicker">// profile</span>
+      <h1>Nitesh<br />Balla</h1>
+      <p class="role">Forward Deployed Engineer · Manif · Payments</p>
+      <p class="bio">
+        I build the systems that move money and stay up, then embed with the
+        people who depend on them to make those systems work in the real world.
+        My background is backend and infrastructure: payment orchestration,
+        distributed systems, Kubernetes, and observability. Comfortable across
+        the stack when a problem needs it.
+      </p>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .profile {
+    padding-block: clamp(1.2rem, 4vw, 2rem);
+    font-family: var(--font-mono);
+  }
+  .head {
+    background: var(--panel);
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+    padding: clamp(1.4rem, 4vw, 2.4rem);
+    margin-bottom: 16px;
+  }
+  .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .head h1 {
+    font-family: var(--font-app);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    margin: 0.7rem 0 0.4rem;
+  }
+  .role {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--accent-ink);
+    letter-spacing: 0.02em;
+  }
+  .bio {
+    font-family: var(--font-app);
+    font-weight: 500;
+    font-size: clamp(1rem, 1.8vw, 1.15rem);
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 60ch;
+    margin-top: 1.2rem;
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const main = document.querySelector("#main-content") as HTMLElement | null;
+    if (main?.dataset?.backurl)
+      sessionStorage.setItem("backUrl", main.dataset.backurl);
+  });
+</script>

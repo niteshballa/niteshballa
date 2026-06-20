@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nitesh — Sample B · Terminal</title>
+<style>
+  :root{ --bg:#0c0d10; --ink:#e6e3da; --muted:#6b7280; --line:#23262d; --accent:#5eead4; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;
+  }
+  canvas{position:fixed; inset:0; width:100%; height:100%; display:block; opacity:.55}
+  .stage{position:relative; z-index:2; width:min(560px,90vw); padding:2rem}
+  .prompt{color:var(--muted); font-size:.8rem; margin-bottom:1.4rem}
+  .prompt b{color:var(--accent); font-weight:400}
+  h1{font-size:clamp(2rem,6vw,3.2rem); font-weight:600; letter-spacing:-.02em; line-height:1.05}
+  h1 .cursor{display:inline-block; width:.5em; height:1em; background:var(--accent); margin-left:.1em; vertical-align:-.08em; animation:blink 1.1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .role{color:var(--muted); margin-top:1rem; font-size:.92rem}
+  .role span{color:var(--ink)}
+  nav{margin-top:2.4rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:.5rem; max-width:430px}
+  nav a{
+    display:flex; justify-content:space-between; align-items:center;
+    text-decoration:none; color:var(--ink); font-size:.82rem;
+    border:1px solid var(--line); border-radius:6px; padding:.6rem .8rem;
+    transition:all .15s ease; background:rgba(255,255,255,.012);
+  }
+  nav a kbd{color:var(--muted); font-size:.7rem; border:1px solid var(--line); border-radius:3px; padding:0 .35rem}
+  nav a:hover{border-color:var(--accent); color:var(--accent); background:rgba(94,234,212,.06)}
+  nav a:hover kbd{color:var(--accent); border-color:var(--accent)}
+  .hint{position:fixed; left:1.6rem; bottom:1.4rem; z-index:2; font-size:.7rem; color:var(--muted)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="stage">
+  <div class="prompt"><b>~/nitesh</b> $ whoami</div>
+  <h1>Nitesh Balla<span class="cursor"></span></h1>
+  <div class="role">// <span>backend &amp; infra engineer</span> — distributed systems, observability, the unglamorous plumbing that keeps things up.</div>
+  <nav>
+    <a href="#">Blog <kbd>b</kbd></a>
+    <a href="#">GitHub <kbd>g</kbd></a>
+    <a href="#">LinkedIn <kbd>l</kbd></a>
+    <a href="#">Writing <kbd>w</kbd></a>
+  </nav>
+</div>
+<div class="hint">press a key to navigate</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+let W,H,dpr,cols,rows;const S=26;
+function size(){dpr=devicePixelRatio||1;W=c.width=innerWidth*dpr;H=c.height=innerHeight*dpr;cols=Math.ceil(W/(S*dpr));rows=Math.ceil(H/(S*dpr));}
+size();addEventListener('resize',size);
+let t=0;
+function draw(){
+  x.clearRect(0,0,W,H);
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
+    const px=i*S*dpr, py=j*S*dpr;
+    const d=Math.sin(i*0.4+t)*Math.cos(j*0.4-t)*0.5+0.5;
+    const a=0.04+d*0.16;
+    x.fillStyle='rgba(94,234,212,'+a+')';
+    const r=(0.6+d*1.6)*dpr;
+    x.beginPath();x.arc(px,py,r,0,7);x.fill();
+  }
+  t+=0.012;requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>

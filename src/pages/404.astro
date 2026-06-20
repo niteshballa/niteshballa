@@ -1,7 +1,31 @@
 ---
-import Layout from '~/layouts/Layout.astro'
+import Layout from "@/layouts/Layout.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import { SITE } from "@/config";
 ---
 
-<Layout>
-  <h1 class="inline-block m-auto p-4 text-accent text-4xl">404</h1>
+<Layout title={`404 Not Found | ${SITE.title}`}>
+
+  <main
+    id="main-content"
+    class="app-layout flex flex-1 items-center justify-center"
+  >
+    <div
+      class="mb-14 flex flex-col items-center justify-center border-[2.5px] border-foreground bg-(--panel) px-8 py-12 shadow-[6px_6px_0_var(--foreground)] sm:px-16"
+    >
+      <h1 class="text-8xl font-bold tracking-tighter text-accent sm:text-9xl">
+        404
+      </h1>
+      <span class="font-mono" aria-hidden="true">¯\_(ツ)_/¯</span>
+      <p class="mt-4 text-2xl font-bold uppercase tracking-tight sm:text-3xl">
+        Page Not Found
+      </p>
+      <LinkButton
+        href="/"
+        class="mt-8 inline-block border-[2.5px] border-foreground bg-foreground px-5 py-2 font-mono text-sm font-bold uppercase tracking-wider text-background shadow-[4px_4px_0_var(--accent)] transition-all hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[6px_6px_0_var(--accent)]"
+      >
+        Go back home
+      </LinkButton>
+    </div>
+  </main>
 </Layout>

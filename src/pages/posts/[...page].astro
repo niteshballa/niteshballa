@@ -1,31 +1,188 @@
 ---
-import type { GetStaticPaths } from 'astro'
-import Layout from '~/layouts/Layout.astro'
-import { getSortedPosts } from '~/utils'
-import Pagination from '~/components/Pagination.astro'
-import siteConfig from '~/site.config'
-import PostPreview from '~/components/PostPreview.astro'
-import PageHeader from '~/components/PageHeader.astro'
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Pagination from "@/components/Pagination.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import { getPath } from "@/utils/getPath";
+import { SITE } from "@/config";
 
-// Note: Pagination like '/', '/2', '/3' only works with spread param like [...page]
 export const getStaticPaths = (async ({ paginate }) => {
-  const sortedPosts = await getSortedPosts()
-  return paginate(sortedPosts.reverse(), { pageSize: siteConfig.pageSize })
-}) satisfies GetStaticPaths
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return paginate(getSortedPosts(posts), { pageSize: SITE.postPerPage });
+}) satisfies GetStaticPaths;
 
-const { page } = Astro.props
-const pageTitle = 'Archive' + (page.currentPage > 1 ? ` - Page ${page.currentPage}` : '')
+const { page } = Astro.props;
+
+const fmtDate = (d: Date) =>
+  d
+    .toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+    .toUpperCase();
 ---
 
-<Layout title={pageTitle} description="All posts in the archive">
-  <div class="mt-2 sm:mt-0">
-    <PageHeader />
-    {page.data.map((post) => <PostPreview post={post} />)}
-    <Pagination
-      prevLink={page.url.prev ? page.url.prev : undefined}
-      prevText="Newer Posts"
-      nextLink={page.url.next ? page.url.next : undefined}
-      nextText="Older Posts"
-    />
-  </div>
+<Layout title={`Posts | ${SITE.title}`}>
+  <main id="main-content" class="ledger app-layout" data-backurl="/posts">
+    <header class="blog-head">
+      <h1>Field Notes</h1>
+      <p class="tagline">
+        Notes from production: payments, infrastructure, and the unglamorous
+        parts. <span class="count">[{page.total}]</span>
+      </p>
+    </header>
+
+    <ol class="index">
+      {
+        page.data.map((post, i) => {
+          const n = String((page.currentPage - 1) * page.size + i + 1).padStart(
+            2,
+            "0"
+          );
+          return (
+            <li class:list={["row", { featured: post.data.featured }]}>
+              <a href={`/${getPath(post.id, post.filePath)}`} class="entry">
+                <span class="no">{n}</span>
+                <span class="body">
+                  <span class="t">
+                    {post.data.featured && <span class="star">★</span>}
+                    {post.data.title}
+                  </span>
+                  <span class="tags">
+                    {post.data.tags.slice(0, 3).map(t => (
+                      <span>#{t}</span>
+                    ))}
+                  </span>
+                </span>
+                <span class="date">{fmtDate(post.data.pubDatetime)}</span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ol>
+  </main>
+
+  <Pagination {page} />
 </Layout>
+
+<style>
+  .ledger {
+    padding-block: clamp(1.2rem, 4vw, 2rem);
+  }
+
+  /* standalone blog header */
+  .blog-head {
+    margin-bottom: clamp(1.8rem, 5vw, 2.8rem);
+  }
+  .blog-head h1 {
+    font-family: var(--font-app);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 8vw, 4.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+  .blog-head .tagline {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+  .blog-head .count {
+    color: var(--accent-ink);
+  }
+
+  .index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1.5px solid var(--ink);
+  }
+  .entry {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--foreground);
+    padding: 1.15rem 0.3rem;
+    border-bottom: 1.5px solid var(--border);
+    transition:
+      background 0.15s,
+      padding 0.15s;
+  }
+  .entry:hover,
+  .entry:focus-visible {
+    background: var(--panel);
+    padding-inline: 0.6rem;
+    outline: none;
+  }
+  .no {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent-ink);
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+  .t {
+    font-family: var(--font-app);
+    font-weight: 600;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--foreground);
+  }
+  .entry:hover .t,
+  .entry:focus-visible .t {
+    color: var(--accent-ink);
+  }
+  .star {
+    color: var(--accent-ink);
+    margin-right: 0.35rem;
+    font-size: 0.8em;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .date {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 560px) {
+    .entry {
+      grid-template-columns: auto 1fr;
+    }
+    .date {
+      grid-column: 2;
+      margin-top: 0.2rem;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const main = document.querySelector("#main-content") as HTMLElement | null;
+    const backUrl = main?.dataset?.backurl;
+    if (backUrl) sessionStorage.setItem("backUrl", backUrl);
+  });
+</script>

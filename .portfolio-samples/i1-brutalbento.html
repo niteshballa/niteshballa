@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>I1 · Brutalist Bento — Nitesh Balla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:oklch(0.963 0.012 84);--panel:oklch(0.985 0.007 86);--ink:oklch(0.225 0.018 58);--muted:oklch(0.5 0.022 64);--accent:oklch(0.56 0.17 38);--grot:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;--sh:5px 5px 0 var(--ink)}
+  *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{background:var(--paper);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;padding:clamp(1.4rem,4vw,2.8rem)}
+  .grain{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.05;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .bento{width:100%;max-width:1040px;margin-inline:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;grid-auto-rows:minmax(86px,auto)}
+  @media(max-width:740px){.bento{grid-template-columns:repeat(2,1fr)}}
+  .b{background:var(--panel);border:2.5px solid var(--ink);box-shadow:var(--sh);padding:clamp(1rem,2vw,1.5rem);transition:transform .16s cubic-bezier(.2,.8,.2,1),box-shadow .16s}
+  .b:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 var(--accent)}
+  .lbl{font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .bar{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;background:var(--ink);color:var(--paper);box-shadow:var(--sh);padding:.6rem 1rem;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase}
+  .bar:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 var(--accent)}
+  .bar .acc{color:oklch(0.78 0.14 55)}
+  .intro{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column;justify-content:space-between}
+  .badge{align-self:flex-start;background:var(--accent);color:var(--paper);border:2px solid var(--ink);padding:.25rem .6rem;font-weight:700;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;transform:rotate(-1.5deg)}
+  .intro h1{font-family:var(--grot);font-weight:700;font-size:clamp(2.6rem,6.5vw,4.6rem);line-height:.86;letter-spacing:-.04em;text-transform:uppercase;margin:.7rem 0 .3rem}
+  .intro p{font-family:var(--grot);font-weight:500;font-size:1.02rem;line-height:1.3;color:var(--muted);max-width:30ch}
+  .writing{grid-column:span 2;grid-row:span 3;display:flex;flex-direction:column}
+  .writing .list{margin-top:.7rem;flex:1}
+  .writing a{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;text-decoration:none;color:var(--ink);font-family:var(--grot);font-weight:500;padding:.7rem 0;border-bottom:2px solid var(--ink);transition:color .12s,padding .14s}
+  .writing a:last-child{border-bottom:none}
+  .writing a .y{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+  .writing a:hover{color:var(--accent);padding-left:.3rem}
+  .now{grid-column:span 2}.now .big{font-family:var(--grot);font-weight:500;font-size:1.05rem;margin-top:.4rem;line-height:1.25}.now .dot{color:var(--accent)}
+  .stack{grid-column:span 2}.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}.chips span{font-size:.66rem;border:2px solid var(--ink);padding:.16rem .5rem;font-weight:500}
+  .accent{grid-column:span 2;background:var(--accent);color:var(--paper);border-color:var(--ink);display:flex;align-items:center}
+  .accent .q{font-family:var(--grot);font-weight:600;font-size:1.15rem;line-height:1.2}
+  .accent:hover{box-shadow:8px 8px 0 var(--ink)}
+  .links{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:.6rem;background:transparent;border:none;box-shadow:none;padding:0}
+  .links:hover{transform:none}
+  .links a{flex:1;min-width:120px;text-align:center;background:var(--ink);color:var(--paper);border:2.5px solid var(--ink);box-shadow:4px 4px 0 var(--accent);padding:.7rem;font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;text-decoration:none;transition:transform .12s,box-shadow .12s}
+  .links a:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--accent)}
+</style></head>
+<body>
+<div class="grain"></div>
+<div class="bento">
+  <div class="bar"><span>NITESH BALLA — <span class="acc">FORWARD DEPLOYED ENGINEER</span></span><span>MANIF · 2026</span></div>
+  <div class="b intro">
+    <span class="badge">Payments · Infra</span>
+    <div><h1>Nitesh<br>Balla</h1><p>I build the systems that move money and stay up, then go make them work in the real world.</p></div>
+  </div>
+  <div class="b writing">
+    <span class="lbl">// Field notes</span>
+    <div class="list">
+      <a href="#"><span>Loki multi-tenancy guide</span><span class="y">2025</span></a>
+      <a href="#"><span>Closures in JavaScript</span><span class="y">2025</span></a>
+      <a href="#"><span>Idempotency &amp; money saved</span><span class="y">draft</span></a>
+    </div>
+  </div>
+  <div class="b now"><span class="lbl">// Now</span><div class="big"><span class="dot">●</span> Building payment orchestration at Manif.</div></div>
+  <div class="b accent"><span class="q">"The unglamorous plumbing is the product."</span></div>
+  <div class="b stack"><span class="lbl">// Stack</span><div class="chips"><span>RUST</span><span>HYPERSWITCH</span><span>K8S</span><span>POSTGRES</span><span>GRAFANA</span></div></div>
+  <div class="links"><a href="#">Blog</a><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">RSS</a></div>
+</div>
+</body></html>

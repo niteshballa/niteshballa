@@ -1,18 +1,12 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "public/pagefind"],
   "compilerOptions": {
-    "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
-    "plugins": [
-      {
-        "name": "@astrojs/ts-plugin"
-      }
-    ],
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   }

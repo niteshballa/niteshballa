@@ -1,43 +1,43 @@
 ---
-import IconChevronsLeft from '~/icons/chevrons-left.svg'
-import IconChevronsRight from '~/icons/chevrons-right.svg'
+import type { Page } from "astro";
+import type { CollectionEntry } from "astro:content";
+import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import LinkButton from "./LinkButton.astro";
 
-interface Props {
-  prevLink?: string
-  prevText?: string
-  nextLink?: string
-  nextText?: string
-}
+type Props = {
+  page: Page<CollectionEntry<"blog">>;
+};
 
-const { prevLink, prevText, nextLink, nextText } = Astro.props
+const { page } = Astro.props;
 ---
 
-<div class="my-5 flex flex-row flex-wrap gap-3 justify-center">
-  {
-    prevLink && (
-      <a
-        href={prevLink}
-        aria-label="Previous Page"
-        class="button flex-row items-center justify-center w-full !pr-3.5 sm:w-min"
+{
+  page.lastPage > 1 && (
+    <nav
+      class="mt-auto mb-8 flex justify-center"
+      role="navigation"
+      aria-label="Pagination Navigation"
+    >
+      <LinkButton
+        disabled={!page.url.prev}
+        href={page.url.prev as string}
+        class:list={["me-4 select-none", { "opacity-50": !page.url.prev }]}
+        aria-label="Goto Previous Page"
       >
-        <IconChevronsLeft class="mr-2 text-xl size-5" />
-        {prevText || 'Previous'}
-      </a>
-    )
-  }
-  {
-    nextLink && (
-      <a
-        href={nextLink}
-        aria-label="Next Page"
-        class:list={[
-          'button flex-row items-center justify-center w-full !pl-3.5 sm:w-min',
-          prevLink && 'ml-auto',
-        ]}
+        <IconArrowLeft class="inline-block rtl:rotate-180" />
+        Prev
+      </LinkButton>
+      {page.currentPage} / {page.lastPage}
+      <LinkButton
+        disabled={!page.url.next}
+        href={page.url.next as string}
+        class:list={["ms-4 select-none", { "opacity-50": !page.url.next }]}
+        aria-label="Goto Next Page"
       >
-        {nextText || 'Next'}
-        <IconChevronsRight class="ml-2 text-xl size-5" />
-      </a>
-    )
-  }
-</div>
+        Next
+        <IconArrowRight class="inline-block rtl:rotate-180" />
+      </LinkButton>
+    </nav>
+  )
+}

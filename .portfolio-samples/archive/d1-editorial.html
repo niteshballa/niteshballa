@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nitesh Balla — engineer & writer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:oklch(0.968 0.009 85);
+    --ink:oklch(0.255 0.018 60);
+    --muted:oklch(0.52 0.022 65);
+    --hair:oklch(0.88 0.012 80);
+    --accent:oklch(0.52 0.16 36);
+    --serif:"Fraunces","Iowan Old Style",Palatino,Georgia,serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--serif);
+    -webkit-font-smoothing:antialiased; line-height:1.5; min-height:100vh;
+    padding:clamp(2rem,7vw,6rem) clamp(1.5rem,7vw,7rem);
+    display:flex; align-items:center;
+  }
+  .grain{position:fixed; inset:0; z-index:99; pointer-events:none; opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  .wrap{width:100%; max-width:720px; margin-inline:auto}
+  .kicker{font-family:var(--mono); font-size:.74rem; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-bottom:2.4rem}
+  .kicker b{color:var(--ink); font-weight:500}
+  h1{font-weight:340; font-size:clamp(2.3rem,5.4vw,3.7rem); line-height:1.08; letter-spacing:-.015em; max-width:16ch}
+  h1 em{font-style:italic; color:var(--accent); font-weight:360}
+  .lede{margin-top:1.6rem; color:var(--muted); font-size:clamp(1.02rem,1.6vw,1.18rem); max-width:54ch; line-height:1.6}
+  .writing{margin-top:clamp(3rem,6vw,4.5rem)}
+  .writing h2{font-family:var(--mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); font-weight:500; margin-bottom:.4rem}
+  a.row{
+    display:flex; align-items:baseline; gap:1rem; justify-content:space-between;
+    text-decoration:none; color:var(--ink); padding:1rem 0; border-bottom:1px solid var(--hair);
+    transition:color .16s ease, padding .2s ease;
+  }
+  a.row:first-of-type{border-top:1px solid var(--hair)}
+  a.row .t{font-size:clamp(1.05rem,1.8vw,1.28rem); font-weight:380}
+  a.row .d{font-family:var(--mono); font-size:.74rem; color:var(--muted); white-space:nowrap}
+  a.row:hover{color:var(--accent); padding-left:.5rem}
+  a.row:hover .d{color:var(--accent)}
+  footer{margin-top:clamp(3rem,6vw,4.5rem); display:flex; gap:1.4rem; flex-wrap:wrap; font-family:var(--mono); font-size:.78rem}
+  footer a{color:var(--muted); text-decoration:none; transition:color .15s ease}
+  footer a:hover{color:var(--accent)}
+  footer .sep{color:var(--hair)}
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="wrap">
+  <p class="kicker"><b>Nitesh Balla</b> &nbsp;/&nbsp; backend &amp; infrastructure engineer</p>
+  <h1>I build the <em>unglamorous plumbing</em> that keeps software running in production.</h1>
+  <p class="lede">Payments, distributed systems, observability. I write here about the parts that don't make the changelog: the failure modes, the trade-offs, the 2am decisions.</p>
+
+  <section class="writing">
+    <h2>Recent writing</h2>
+    <a class="row" href="#"><span class="t">A practical guide to Loki multi-tenancy</span><span class="d">2025 · 14 min</span></a>
+    <a class="row" href="#"><span class="t">Understanding closures in JavaScript</span><span class="d">2025 · 9 min</span></a>
+    <a class="row" href="#"><span class="t">Idempotency keys, and the money they save</span><span class="d">draft</span></a>
+  </section>
+
+  <footer>
+    <a href="#">GitHub</a><span class="sep">/</span>
+    <a href="#">LinkedIn</a><span class="sep">/</span>
+    <a href="#">RSS</a><span class="sep">/</span>
+    <a href="#">ce-nitesh@…</a>
+  </footer>
+</div>
+</body>
+</html>

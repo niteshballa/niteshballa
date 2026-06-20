@@ -1,76 +1,275 @@
 ---
-import Layout from '~/layouts/Layout.astro'
-import { getSortedPosts } from '~/utils'
-import { getCollection, render } from 'astro:content'
-import PostPreview from '~/components/PostPreview.astro'
-import Pagination from '~/components/Pagination.astro'
-import BlockHeader from '~/components/BlockHeader.astro'
-import HomeBanner from '~/components/HomeBanner.astro'
-import siteConfig from '~/site.config'
-import TagsSection from '~/components/TagsSection.astro'
-import SeriesSection from '~/components/SeriesSection.astro'
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import { getPath } from "@/utils/getPath";
 
-const home = await getCollection('home')
-let HomeContent
-let homeAvatarImage
-let homeGithubCalendar
-if (home.length > 0) {
-  const homeEntry = home[0]
-  const { Content } = await render(homeEntry)
-  HomeContent = Content
-  homeAvatarImage = homeEntry.data.avatarImage
-  homeGithubCalendar = homeEntry.data.githubCalendar
-}
-const sortedPosts = await getSortedPosts()
-const postsHaveTags = sortedPosts.some(
-  (post) => post.data.tags && post.data.tags.length > 0,
-)
+const posts = await getCollection("blog");
+const sortedPosts = getSortedPosts(posts);
+const recent = sortedPosts.slice(0, 3);
 
-const postsHaveSeries = sortedPosts.some((post) => post.data.series)
+const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
 ---
 
 <Layout>
-  {
-    HomeContent && (
-      <HomeBanner avatarImage={homeAvatarImage} githubCalendar={homeGithubCalendar}>
-        <HomeContent />
-      </HomeBanner>
-    )
-  }
-  {
-    postsHaveSeries && (
-      <section>
-        <BlockHeader>Series</BlockHeader>
-        <SeriesSection posts={sortedPosts} />
+  <main id="main-content" class="hub" data-layout="index">
+    <div class="bento">
+      <!-- intro / profile card -->
+      <a
+        class="b-card spot cell intro"
+        href="/about/"
+        transition:name="card-profile"
+      >
+        <div>
+          <h1>Nitesh<br />Balla</h1>
+          <p>
+            I build the systems that move money and stay up, then go make them
+            work in the real world.
+          </p>
+        </div>
+        <span class="enter">View profile →</span>
+      </a>
+
+      <!-- field notes / recent posts -->
+      <section class="b-card spot cell writing">
+        <span class="lbl">// Field notes</span>
+        <div class="list">
+          {
+            recent.map(post => (
+              <a href={`/${getPath(post.id, post.filePath)}`}>
+                <span class="t">{post.data.title}</span>
+                <span class="y">{post.data.pubDatetime.getFullYear()}</span>
+              </a>
+            ))
+          }
+        </div>
+        <a class="all" href="/posts/">All posts →</a>
       </section>
-    )
-  }
-  {
-    postsHaveTags && (
-      <section>
-        <BlockHeader>Tags</BlockHeader>
-        <TagsSection posts={sortedPosts} />
+
+      <!-- now -->
+      <section class="b-card spot cell now">
+        <span class="lbl">// Now</span>
+        <div class="big">
+          <span class="dot">●</span> Building payment orchestration at Manif.
+        </div>
       </section>
-    )
-  }
-  {
-    sortedPosts.length > 0 && (
-      <section>
-        <BlockHeader>Latest Posts</BlockHeader>
-        {sortedPosts
-          .reverse()
-          .slice(0, Math.floor(siteConfig.pageSize / 2))
-          .map((post) => (
-            <PostPreview post={post} />
-          ))}
-        <Pagination nextLink="/posts" nextText="Archive" />
+
+      <!-- accent quote -->
+      <section class="b-card cell accent">
+        <span class="q">"The unglamorous plumbing is the product."</span>
       </section>
-    )
-  }
+
+      <!-- stack -->
+      <section class="b-card spot cell stack">
+        <span class="lbl">// Stack</span>
+        <div class="chips">{STACK.map(s => <span>{s}</span>)}</div>
+      </section>
+
+    </div>
+  </main>
 </Layout>
 
-<style is:global>
-  a.heading-anchor {
-    display: none !important;
+<style>
+  .hub {
+    width: 100%;
+    max-width: 1040px;
+    margin-inline: auto;
+    padding: 14px clamp(1rem, 4vw, 2rem) 0;
+  }
+  .bento {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    grid-auto-rows: minmax(86px, auto);
+    font-family: var(--font-mono);
+  }
+  .cell {
+    padding: clamp(1rem, 2vw, 1.5rem);
+  }
+  .lbl {
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* intro */
+  .intro {
+    grid-column: span 2;
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.2rem;
+    text-decoration: none;
+    color: inherit;
+  }
+  .intro .enter {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    opacity: 0;
+    transition: opacity 0.16s;
+  }
+  .intro:hover .enter {
+    opacity: 1;
+  }
+  .intro h1 {
+    font-family: var(--font-app);
+    font-weight: 700;
+    font-size: clamp(2.6rem, 6.5vw, 4.6rem);
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    margin: 0.7rem 0 0.3rem;
+  }
+  .intro p {
+    font-family: var(--font-app);
+    font-weight: 500;
+    font-size: 1.02rem;
+    line-height: 1.3;
+    color: var(--muted);
+    max-width: 30ch;
+  }
+
+  /* writing */
+  .writing {
+    grid-column: span 2;
+    grid-row: span 3;
+    display: flex;
+    flex-direction: column;
+  }
+  .writing .list {
+    margin-top: 0.7rem;
+    flex: 1;
+  }
+  .writing a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--foreground);
+    font-family: var(--font-app);
+    font-weight: 500;
+    padding: 0.75rem 0;
+    border-bottom: 2px solid var(--ink);
+    transition:
+      color 0.12s,
+      padding 0.14s;
+  }
+  .writing .list a:last-child {
+    border-bottom: none;
+  }
+  .writing a .t {
+    font-size: 0.98rem;
+  }
+  .writing a .y {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+  .writing a:hover {
+    color: var(--accent-ink);
+    padding-left: 0.3rem;
+  }
+  .writing .all {
+    border: none;
+    padding: 0.6rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    justify-content: flex-start;
+  }
+  .writing .all:hover {
+    color: var(--accent-ink);
+    padding-left: 0.3rem;
+  }
+
+  /* now */
+  .now {
+    grid-column: span 2;
+  }
+  .now .big {
+    font-family: var(--font-app);
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin-top: 0.4rem;
+    line-height: 1.25;
+  }
+  .now .dot {
+    color: var(--accent);
+  }
+
+  /* accent */
+  .accent {
+    grid-column: span 2;
+    background: var(--accent-ink);
+    color: var(--background);
+    display: flex;
+    align-items: center;
+  }
+  .accent:hover {
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .accent .q {
+    font-family: var(--font-app);
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+
+  /* stack */
+  .stack {
+    grid-column: span 2;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.55rem;
+  }
+  .chips span {
+    font-size: 0.66rem;
+    border: 2px solid var(--ink);
+    padding: 0.16rem 0.5rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 740px) {
+    .bento {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .intro,
+    .writing,
+    .now,
+    .accent,
+    .stack {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
   }
 </style>
+
+<script>
+  // subtle terracotta pointer-spotlight on cards
+  function initSpotlight() {
+    document.querySelectorAll<HTMLElement>(".b-card.spot").forEach(card => {
+      card.addEventListener("pointermove", e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--x", `${e.clientX - r.left}px`);
+        card.style.setProperty("--y", `${e.clientY - r.top}px`);
+      });
+    });
+  }
+  document.addEventListener("astro:page-load", () => {
+    initSpotlight();
+    const indexLayout = (
+      document.querySelector("#main-content") as HTMLElement
+    )?.dataset?.layout;
+    if (indexLayout) sessionStorage.setItem("backUrl", "/");
+  });
+</script>

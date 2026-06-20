@@ -1,0 +1,385 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import { getPath } from "@/utils/getPath";
+import IconGitHub from "@/assets/icons/IconGitHub.svg";
+import IconLinkedin from "@/assets/icons/IconLinkedin.svg";
+import IconRss from "@/assets/icons/IconRss.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+
+const posts = await getCollection("blog");
+const sortedPosts = getSortedPosts(posts);
+const recent = sortedPosts.slice(0, 3);
+
+const year = new Date().getFullYear();
+
+const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
+---
+
+<Layout>
+  <main id="main-content" class="hub" data-layout="index">
+    <div class="bento">
+      <!-- masthead -->
+      <div class="bar">
+        <span class="bar-l">
+          NITESH BALLA · <span class="acc">FORWARD DEPLOYED ENGINEER</span>
+        </span>
+        <span class="bar-r">MANIF · {year}</span>
+      </div>
+
+      <!-- identity -->
+      <section class="cell intro">
+        <span class="badge">Payments · Infra</span>
+        <div>
+          <h1>Nitesh<br />Balla</h1>
+          <p class="lede">
+            I build the systems that move money and stay up, then go make them
+            work in the real world.
+          </p>
+        </div>
+      </section>
+
+      <!-- field notes / recent posts -->
+      <section class="cell spot writing">
+        <span class="lbl">// Field notes</span>
+        <div class="list">
+          {
+            recent.map(post => (
+              <a href={`/${getPath(post.id, post.filePath)}`}>
+                <span class="t">{post.data.title}</span>
+                <span class="y">{post.data.pubDatetime.getFullYear()}</span>
+              </a>
+            ))
+          }
+        </div>
+        <a class="all" href="/posts/">All posts →</a>
+      </section>
+
+      <!-- now -->
+      <section class="cell now">
+        <span class="lbl">// Now</span>
+        <div class="big">
+          <span class="dot">●</span> Building payment orchestration at Manif.
+        </div>
+      </section>
+
+      <!-- stack -->
+      <section class="cell stack">
+        <span class="lbl">// Stack</span>
+        <div class="chips">{STACK.map(s => <span>{s}</span>)}</div>
+      </section>
+
+      <!-- links -->
+      <nav class="links" aria-label="primary">
+        <a href="/posts/">
+          <span>Blog</span><IconArrowRight width={17} height={17} />
+        </a>
+        <a href="/about/">
+          <span>About</span><IconArrowRight width={17} height={17} />
+        </a>
+        <a href="https://github.com/niteshballa" target="_blank" rel="noopener">
+          <span>GitHub</span><IconGitHub width={17} height={17} />
+        </a>
+        <a
+          href="https://www.linkedin.com/in/niteshballa/"
+          target="_blank"
+          rel="noopener"
+        >
+          <span>LinkedIn</span><IconLinkedin width={17} height={17} />
+        </a>
+        <a href="/rss.xml" target="_blank">
+          <span>RSS</span><IconRss width={17} height={17} />
+        </a>
+      </nav>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .hub {
+    width: 100%;
+    max-width: 940px;
+    margin-inline: auto;
+    padding: clamp(2rem, 6vw, 4rem) clamp(1rem, 4vw, 2rem);
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .bento {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    grid-auto-rows: minmax(84px, auto);
+    font-family: var(--font-mono);
+  }
+
+  /* masthead bar */
+  .bar {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background: var(--ink);
+    color: var(--background);
+    border: 2.5px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: 0.6rem 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transition:
+      transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.16s;
+  }
+  .bar:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--accent);
+  }
+  .bar .acc {
+    color: oklch(0.8 0.15 55);
+  }
+
+  /* brutalist cells: thick ink border + hard offset shadow, press on hover */
+  .cell {
+    position: relative;
+    background: var(--panel);
+    border: 2.5px solid var(--ink);
+    box-shadow: 5px 5px 0 var(--ink);
+    padding: clamp(1.2rem, 2.4vw, 1.8rem);
+    transition:
+      transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 0.16s;
+  }
+  .cell:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--accent);
+  }
+  .lbl {
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .badge {
+    align-self: flex-start;
+    background: var(--accent);
+    color: var(--background);
+    border: 2px solid var(--ink);
+    padding: 0.28rem 0.65rem;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* subtle terracotta pointer-spotlight (hover only) */
+  .cell.spot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.25s;
+    background: radial-gradient(
+      180px circle at var(--x, 50%) var(--y, 50%),
+      var(--accent),
+      transparent 60%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  .cell.spot:hover::before {
+    opacity: 1;
+  }
+
+  /* intro */
+  .intro {
+    grid-column: span 1;
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.4rem;
+  }
+  .intro h1 {
+    font-family: var(--font-app);
+    font-weight: 700;
+    font-size: clamp(2.8rem, 7vw, 4.8rem);
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    margin: 0 0 0.5rem;
+  }
+  .intro .lede {
+    font-family: var(--font-app);
+    font-weight: 500;
+    font-size: 1.05rem;
+    line-height: 1.35;
+    color: var(--muted);
+    max-width: 34ch;
+  }
+
+  /* writing */
+  .writing {
+    grid-column: span 1;
+    grid-row: span 2;
+    display: flex;
+    flex-direction: column;
+  }
+  .writing .list {
+    margin-top: 0.8rem;
+    flex: 1;
+  }
+  .writing a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--foreground);
+    font-family: var(--font-app);
+    font-weight: 500;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+    transition:
+      color 0.12s,
+      padding 0.14s;
+  }
+  .writing .list a:last-child {
+    border-bottom: none;
+  }
+  .writing a .t {
+    font-size: 0.98rem;
+  }
+  .writing a .y {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+  .writing a:hover {
+    color: var(--accent);
+    padding-left: 0.3rem;
+  }
+  .writing .all {
+    border: none;
+    padding: 0.7rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    justify-content: flex-start;
+  }
+  .writing .all:hover {
+    color: var(--accent);
+    padding-left: 0.3rem;
+  }
+
+  /* now */
+  .now {
+    grid-column: span 1;
+  }
+  .now .big {
+    font-family: var(--font-app);
+    font-weight: 500;
+    font-size: 1.05rem;
+    margin-top: 0.5rem;
+    line-height: 1.3;
+  }
+  .now .dot {
+    color: var(--accent);
+  }
+
+  /* stack */
+  .stack {
+    grid-column: span 1;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+  }
+  .chips span {
+    font-size: 0.66rem;
+    border: 1.5px solid var(--ink);
+    padding: 0.18rem 0.55rem;
+    font-weight: 500;
+  }
+
+  /* links: the one place shadow stays, to signal interactivity */
+  .links {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .links a {
+    flex: 1;
+    min-width: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    background: var(--ink);
+    color: var(--background);
+    border: 1.5px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+    padding: 0.8rem 0.9rem;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition:
+      transform 0.12s,
+      box-shadow 0.12s;
+  }
+  .links a :global(svg) {
+    stroke: currentColor;
+    opacity: 0.85;
+    flex-shrink: 0;
+  }
+  .links a:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    .bento {
+      grid-template-columns: 1fr;
+    }
+    .intro,
+    .writing,
+    .now,
+    .stack {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+</style>
+
+<script>
+  function initSpotlight() {
+    document.querySelectorAll<HTMLElement>(".cell.spot").forEach(card => {
+      card.addEventListener("pointermove", e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--x", `${e.clientX - r.left}px`);
+        card.style.setProperty("--y", `${e.clientY - r.top}px`);
+      });
+    });
+  }
+  document.addEventListener("astro:page-load", () => {
+    initSpotlight();
+    const indexLayout = (
+      document.querySelector("#main-content") as HTMLElement
+    )?.dataset?.layout;
+    if (indexLayout) sessionStorage.setItem("backUrl", "/");
+  });
+</script>

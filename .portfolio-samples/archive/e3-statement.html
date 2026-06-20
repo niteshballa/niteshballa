@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>E3 · Statement — Nitesh Balla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:oklch(0.968 0.009 85);--ink:oklch(0.255 0.018 60);--muted:oklch(0.52 0.022 65);--hair:oklch(0.86 0.012 80);--accent:oklch(0.52 0.16 36);--serif:"Fraunces","Iowan Old Style",Georgia,serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--serif);-webkit-font-smoothing:antialiased;min-height:100vh;position:relative;padding:clamp(1.6rem,4vw,3rem);display:flex;align-items:center}
+  .grain{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.05;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .corner{position:fixed;font-family:var(--mono);font-size:.74rem;letter-spacing:.1em;color:var(--muted);z-index:3}
+  .tl{top:clamp(1.6rem,4vw,3rem);left:clamp(1.6rem,4vw,3rem)}
+  .tr{top:clamp(1.6rem,4vw,3rem);right:clamp(1.6rem,4vw,3rem);text-align:right}
+  .bl{bottom:clamp(1.6rem,4vw,3rem);left:clamp(1.6rem,4vw,3rem);display:flex;gap:1.2rem}
+  .br{bottom:clamp(1.6rem,4vw,3rem);right:clamp(1.6rem,4vw,3rem);text-align:right}
+  .corner a{color:var(--ink);text-decoration:none;transition:.15s}.corner a:hover{color:var(--accent)}
+  .corner b{color:var(--ink);font-weight:500}
+  .big{width:100%;text-align:center}
+  .big .name{font-weight:300;font-size:clamp(3.4rem,17vw,13rem);line-height:.86;letter-spacing:-.03em}
+  .big .name em{font-style:italic;color:var(--accent)}
+  .big .tag{margin-top:1.6rem;font-family:var(--mono);font-size:clamp(.74rem,1.6vw,.9rem);letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+</style></head>
+<body>
+<div class="grain"></div>
+<div class="corner tl"><b>Nitesh Balla</b><br>est. — engineering &amp; field notes</div>
+<div class="corner tr">backend · infra<br>payments</div>
+<div class="big">
+  <div class="name">Nit<em>e</em>sh<br>Balla</div>
+  <div class="tag">building systems that move money &amp; stay up</div>
+</div>
+<div class="corner bl"><a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">RSS</a></div>
+<div class="corner br">latest →<br><a href="#"><b>Loki multi-tenancy</b></a></div>
+</body></html>

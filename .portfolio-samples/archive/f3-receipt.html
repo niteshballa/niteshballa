@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>F3 · Receipt — Nitesh Balla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:oklch(0.968 0.009 85);--ink:oklch(0.255 0.018 60);--muted:oklch(0.52 0.022 65);--hair:oklch(0.80 0.014 75);--accent:oklch(0.52 0.16 36);--serif:"Fraunces","Iowan Old Style",Georgia,serif;--mono:"JetBrains Mono",ui-monospace,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{background:oklch(0.93 0.012 80);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:clamp(1.5rem,5vw,3.5rem)}
+  .grain{position:fixed;inset:0;z-index:99;pointer-events:none;opacity:.06;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .receipt{background:var(--paper);width:100%;max-width:420px;padding:2rem 1.8rem 1.4rem;position:relative;
+    box-shadow:0 24px 60px -28px oklch(0.25 0.02 60 / .45);
+    --p:9px;
+    -webkit-mask:
+      radial-gradient(var(--p) at 50% 0,#0000 98%,#000) 50% 0/calc(var(--p)*2) var(--p) repeat-x,
+      radial-gradient(var(--p) at 50% 100%,#0000 98%,#000) 50% 100%/calc(var(--p)*2) var(--p) repeat-x,
+      linear-gradient(#000 0 0) 50% 50%/calc(100% - 1px) calc(100% - var(--p)*2) no-repeat;
+    mask:
+      radial-gradient(var(--p) at 50% 0,#0000 98%,#000) 50% 0/calc(var(--p)*2) var(--p) repeat-x,
+      radial-gradient(var(--p) at 50% 100%,#0000 98%,#000) 50% 100%/calc(var(--p)*2) var(--p) repeat-x,
+      linear-gradient(#000 0 0) 50% 50%/calc(100% - 1px) calc(100% - var(--p)*2) no-repeat;}
+  .rhead{text-align:center}
+  .seal{width:62px;height:62px;margin:0 auto .8rem;border-radius:50%;overflow:hidden;border:1.5px solid var(--ink)}
+  .seal canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+  .rhead h1{font-family:var(--serif);font-weight:360;font-size:2.1rem;letter-spacing:-.01em;line-height:1}
+  .rhead .role{font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-top:.5rem}
+  .dash{border:none;border-top:1.5px dashed var(--hair);margin:1.1rem 0}
+  .line{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);padding:.18rem 0;letter-spacing:.03em}
+  .line b{color:var(--ink);font-weight:500}
+  .items a{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;text-decoration:none;color:var(--ink);font-size:.78rem;padding:.4rem 0}
+  .items a .t{font-family:var(--serif);font-size:.94rem}
+  .items a .q{color:var(--muted);font-size:.7rem;white-space:nowrap}
+  .items a:hover .t{color:var(--accent)}
+  .total{display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;letter-spacing:.04em;padding-top:.3rem}
+  .total .acc{color:var(--accent)}
+  .barcode{height:42px;margin:1rem 0 .5rem;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 9px,var(--ink) 9px 12px,transparent 12px 14px)}
+  .foot{text-align:center;font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .foot a{color:var(--ink);text-decoration:none}.foot a:hover{color:var(--accent)}
+</style></head>
+<body>
+<div class="grain"></div>
+<div class="receipt">
+  <div class="rhead">
+    <div class="seal"><canvas id="seal"></canvas></div>
+    <h1>Nitesh Balla</h1>
+    <div class="role">forward deployed engineer</div>
+  </div>
+  <hr class="dash">
+  <div class="line"><span>MERCHANT</span><b>Manif · Payments</b></div>
+  <div class="line"><span>STACK</span><b>Rust · K8s · Postgres</b></div>
+  <div class="line"><span>STATUS</span><b>● available to chat</b></div>
+  <hr class="dash">
+  <div class="line" style="margin-bottom:.3rem"><span>FIELD NOTES</span><span>QTY</span></div>
+  <div class="items">
+    <a href="#"><span class="t">Loki multi-tenancy guide</span><span class="q">2025 · 14m</span></a>
+    <a href="#"><span class="t">Closures in JavaScript</span><span class="q">2025 · 9m</span></a>
+    <a href="#"><span class="t">Idempotency &amp; money saved</span><span class="q">draft</span></a>
+  </div>
+  <hr class="dash">
+  <div class="total"><span>TOTAL SHIPPED</span><span class="acc">∞ &amp; counting</span></div>
+  <div class="barcode"></div>
+  <div class="foot"><a href="#">GITHUB</a> · <a href="#">LINKEDIN</a> · <a href="#">RSS</a><br>nitesh.is-a.dev · thank you</div>
+</div>
+<script>
+const cv=document.getElementById('seal'),ctx=cv.getContext('2d');
+const bayer=[0,32,8,40,2,34,10,42,48,16,56,24,50,18,58,26,12,44,4,36,14,46,6,38,60,28,52,20,62,30,54,22,3,35,11,43,1,33,9,41,51,19,59,27,49,17,57,25,15,47,7,39,13,45,5,37,63,31,55,23,61,29,53,21];
+const INK=[64,54,42],PAPER=[244,240,231];
+function render(){const w=cv.width=cv.clientWidth,h=cv.height=cv.clientHeight;if(!w||!h)return;
+  const img=ctx.createImageData(w,h),d=img.data;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const cx=(x/w-0.5),cy=(y/h-0.5);const r=Math.sqrt(cx*cx+cy*cy)*2;
+    const g=Math.min(1,Math.max(0,1-r+0.2*Math.sin(Math.atan2(cy,cx)*3+1)));
+    const thr=(bayer[(y%8)*8+(x%8)]+0.5)/64;const on=g>thr;const c=on?INK:PAPER;
+    const i=(y*w+x)*4;d[i]=c[0];d[i+1]=c[1];d[i+2]=c[2];d[i+3]=255;}
+  ctx.putImageData(img,0,0);}
+render();addEventListener('resize',render);
+</script>
+</body></html>

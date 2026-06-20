@@ -1,0 +1,382 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Datetime from "@/components/Datetime.astro";
+import EditPost from "@/components/EditPost.astro";
+import ShareLinks from "@/components/ShareLinks.astro";
+import BackToTopButton from "@/components/BackToTopButton.astro";
+import { getPath } from "@/utils/getPath";
+import { slugifyStr } from "@/utils/slugify";
+import { SITE } from "@/config";
+
+type Props = {
+  post: CollectionEntry<"blog">;
+  posts: CollectionEntry<"blog">[];
+};
+
+const { post, posts } = Astro.props;
+
+const {
+  title,
+  author,
+  description,
+  ogImage: initOgImage,
+  canonicalURL,
+  pubDatetime,
+  modDatetime,
+  timezone,
+  tags,
+  hideEditPost,
+} = post.data;
+
+const { Content } = await render(post);
+
+let ogImageUrl: string | undefined;
+
+// Determine OG image source
+if (typeof initOgImage === "string") {
+  ogImageUrl = initOgImage; // Remote OG image (absolute URL)
+} else if (initOgImage?.src) {
+  ogImageUrl = initOgImage.src; // Local asset
+}
+
+// Use dynamic OG image if enabled and no remote|local ogImage
+if (!ogImageUrl && SITE.dynamicOgImage) {
+  ogImageUrl = `${getPath(post.id, post.filePath)}/index.png`;
+}
+
+// Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
+const ogImage = ogImageUrl
+  ? new URL(ogImageUrl, Astro.url.origin).href
+  : undefined;
+
+const layoutProps = {
+  title: `${title} | ${SITE.title}`,
+  author,
+  description,
+  pubDatetime,
+  modDatetime,
+  canonicalURL,
+  ogImage,
+  scrollSmooth: true,
+};
+
+/* ========== Prev/Next Posts ========== */
+
+const allPosts = posts.map(({ data: { title }, id, filePath }) => ({
+  id,
+  title,
+  filePath,
+}));
+
+const currentPostIndex = allPosts.findIndex(a => a.id === post.id);
+
+const prevPost = currentPostIndex !== 0 ? allPosts[currentPostIndex - 1] : null;
+const nextPost =
+  currentPostIndex !== allPosts.length ? allPosts[currentPostIndex + 1] : null;
+---
+
+<Layout {...layoutProps}>
+  <main
+    id="main-content"
+    class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
+    data-pagefind-body
+  >
+    <header class="post-head">
+      <span class="kicker">// field note</span>
+      <h1
+        transition:name={slugifyStr(title.replaceAll(".", "-"))}
+        class="post-title"
+      >
+        {title}
+      </h1>
+      <dl class="fm">
+        <div class="fm-row">
+          <dt class="k">date</dt>
+          <dd><Datetime {pubDatetime} {modDatetime} {timezone} size="lg" /></dd>
+        </div>
+        {
+          tags && tags.length > 0 && (
+            <div class="fm-row">
+              <dt class="k">tags</dt>
+              <dd class="fm-tags">
+                {tags.map(t => (
+                  <a href={`/tags/${slugifyStr(t)}/`}>#{t}</a>
+                ))}
+              </dd>
+            </div>
+          )
+        }
+      </dl>
+    </header>
+    <article
+      id="article"
+      class="app-prose mt-8 w-full max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+    >
+      <Content />
+    </article>
+
+    <hr class="my-8 border-dashed" />
+
+    <EditPost class="sm:hidden" {hideEditPost} {post} />
+
+    <BackToTopButton />
+
+    <ShareLinks />
+
+    <hr class="my-6" />
+
+    <!-- Previous/Next Post Buttons -->
+    <nav data-pagefind-ignore class="postnav">
+      {
+        prevPost && (
+          <a href={getPath(prevPost.id, prevPost.filePath)} class="navcell">
+            <span class="lbl">← Previous</span>
+            <span class="ttl">{prevPost.title}</span>
+          </a>
+        )
+      }
+      {
+        nextPost && (
+          <a
+            href={getPath(nextPost.id, nextPost.filePath)}
+            class="navcell next"
+          >
+            <span class="lbl">Next →</span>
+            <span class="ttl">{nextPost.title}</span>
+          </a>
+        )
+      }
+    </nav>
+  </main>
+</Layout>
+
+<style>
+  .post-head {
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--accent);
+    background: var(--panel);
+    padding: clamp(1.2rem, 3vw, 1.8rem);
+    margin-bottom: 2rem;
+  }
+  .post-head .kicker {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .post-title {
+    font-family: var(--font-app);
+    font-weight: 700;
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0.6rem 0 1rem;
+    color: var(--foreground);
+  }
+  .fm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    border-top: 1.5px dashed var(--border);
+    padding-top: 0.9rem;
+    margin: 0;
+  }
+  .fm-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .fm .k {
+    color: var(--accent-ink);
+    font-weight: 600;
+    min-width: 3rem;
+  }
+  .fm dd {
+    margin: 0;
+    color: var(--muted);
+  }
+  .fm-tags {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+  .fm-tags a {
+    color: var(--foreground);
+    text-decoration: none;
+  }
+  .fm-tags a:hover {
+    color: var(--accent-ink);
+  }
+
+  .postnav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 560px) {
+    .postnav {
+      grid-template-columns: 1fr;
+    }
+  }
+  .navcell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--accent);
+    background: var(--panel);
+    padding: 0.9rem 1rem;
+    text-decoration: none;
+    color: var(--foreground);
+    transition:
+      transform 0.14s,
+      box-shadow 0.14s;
+  }
+  .navcell:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 var(--accent);
+  }
+  .navcell.next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  .navcell .lbl {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .navcell .ttl {
+    font-family: var(--font-app);
+    font-weight: 600;
+    color: var(--accent-ink);
+    line-height: 1.2;
+  }
+</style>
+
+<script is:inline data-astro-rerun>
+  /** Create a progress indicator
+   *  at the top */
+  function createProgressBar() {
+    // Create the main container div
+    const progressContainer = document.createElement("div");
+    progressContainer.className =
+      "progress-container fixed top-0 z-10 h-1 w-full bg-background";
+
+    // Create the progress bar div
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar h-1 w-0 bg-accent";
+    progressBar.id = "myBar";
+
+    // Append the progress bar to the progress container
+    progressContainer.appendChild(progressBar);
+
+    // Append the progress container to the document body or any other desired parent element
+    document.body.appendChild(progressContainer);
+  }
+  createProgressBar();
+
+  /** Update the progress bar
+   *  when user scrolls */
+  function updateScrollProgress() {
+    document.addEventListener("scroll", () => {
+      const winScroll =
+        document.body.scrollTop || document.documentElement.scrollTop;
+      const height =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      if (document) {
+        const myBar = document.getElementById("myBar");
+        if (myBar) {
+          myBar.style.width = scrolled + "%";
+        }
+      }
+    });
+  }
+  updateScrollProgress();
+
+  /** Attaches links to headings in the document,
+   *  allowing sharing of sections easily */
+  function addHeadingLinks() {
+    const headings = Array.from(
+      document.querySelectorAll("h2, h3, h4, h5, h6")
+    );
+    for (const heading of headings) {
+      heading.classList.add("group");
+      const link = document.createElement("a");
+      link.className =
+        "heading-link ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100";
+      link.href = "#" + heading.id;
+
+      const span = document.createElement("span");
+      span.ariaHidden = "true";
+      span.innerText = "#";
+      link.appendChild(span);
+      heading.appendChild(link);
+    }
+  }
+  addHeadingLinks();
+
+  /** Attaches copy buttons to code blocks in the document,
+   * allowing users to copy code easily. */
+  function attachCopyButtons() {
+    const copyButtonLabel = "Copy";
+    const codeBlocks = Array.from(document.querySelectorAll("pre"));
+
+    for (const codeBlock of codeBlocks) {
+      const wrapper = document.createElement("div");
+      wrapper.style.position = "relative";
+
+      // Check if --file-name-offset custom property exists
+      const computedStyle = getComputedStyle(codeBlock);
+      const hasFileNameOffset =
+        computedStyle.getPropertyValue("--file-name-offset").trim() !== "";
+
+      // Determine the top positioning class
+      const topClass = hasFileNameOffset
+        ? "top-(--file-name-offset)"
+        : "-top-3";
+
+      const copyButton = document.createElement("button");
+      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.innerHTML = copyButtonLabel;
+      codeBlock.setAttribute("tabindex", "0");
+      codeBlock.appendChild(copyButton);
+
+      // wrap codebock with relative parent element
+      codeBlock?.parentNode?.insertBefore(wrapper, codeBlock);
+      wrapper.appendChild(codeBlock);
+
+      copyButton.addEventListener("click", async () => {
+        await copyCode(codeBlock, copyButton);
+      });
+    }
+
+    async function copyCode(block, button) {
+      const code = block.querySelector("code");
+      const text = code?.innerText;
+
+      await navigator.clipboard.writeText(text ?? "");
+
+      // visual feedback that task is completed
+      button.innerText = "Copied";
+
+      setTimeout(() => {
+        button.innerText = copyButtonLabel;
+      }, 700);
+    }
+  }
+  attachCopyButtons();
+
+  /* Go to page start after page swap */
+  document.addEventListener("astro:after-swap", () =>
+    window.scrollTo({ left: 0, top: 0, behavior: "instant" })
+  );
+</script>
