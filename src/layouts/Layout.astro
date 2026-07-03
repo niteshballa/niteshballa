@@ -30,21 +30,28 @@ const {
 
 const socialImageURL = new URL(ogImage, Astro.url);
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  headline: `${title}`,
-  image: `${socialImageURL}`,
-  datePublished: `${pubDatetime?.toISOString()}`,
-  ...(modDatetime && { dateModified: modDatetime.toISOString() }),
-  author: [
-    {
+// BlogPosting only when this page actually is a post (has a pub date);
+// otherwise a plain Person card. Emitting BlogPosting with undefined
+// dates on every page is an SEO bug.
+const structuredData = pubDatetime
+  ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: title,
+      image: `${socialImageURL}`,
+      datePublished: pubDatetime.toISOString(),
+      ...(modDatetime && { dateModified: modDatetime.toISOString() }),
+      author: [
+        { "@type": "Person", name: author, ...(profile && { url: profile }) },
+      ],
+    }
+  : {
+      "@context": "https://schema.org",
       "@type": "Person",
-      name: `${author}`,
-      ...(profile && { url: profile }),
-    },
-  ],
-};
+      name: author,
+      url: SITE.website,
+      ...(profile && { sameAs: [profile] }),
+    };
 ---
 
 <!doctype html>
@@ -166,7 +173,7 @@ const structuredData = {
       <header class="topbar" transition:persist="topbar">
       <div class="barline">
         <a id="nav-back" class="back" href="/" hidden>← Back</a>
-        <nav id="nav-path" class="path" aria-label="Breadcrumb">~</nav>
+        <span class="role-tag">Forward Deployed Engineer . Manif . Payments</span>
       </div>
     </header>
 
@@ -178,8 +185,6 @@ const structuredData = {
     <!-- Persistent frame: bottom bar (links + copyright) -->
     <footer class="bottombar" transition:persist="bottombar">
       <nav class="flinks" aria-label="Site links">
-        <a href="/posts/">Blog</a>
-        <a href="/about/">About</a>
         <a href="https://github.com/niteshballa" target="_blank" rel="noopener"
           >GitHub</a
         >
@@ -197,21 +202,11 @@ const structuredData = {
     <!-- Frame chrome: breadcrumb path + back button, updated per navigation -->
     <script is:inline>
       (function () {
-        const LABELS = {
-          posts: "field-notes",
-          about: "about",
-          tags: "tags",
-          archives: "archives",
-          search: "search",
-        };
         function updateChrome() {
           const path = location.pathname.replace(/\/+$/, "");
           const segs = path.split("/").filter(Boolean);
-          const pathEl = document.getElementById("nav-path");
           const backEl = document.getElementById("nav-back");
-          if (!pathEl || !backEl) return;
-          const parts = segs.map((s, i) => (i === 0 ? LABELS[s] || s : s));
-          pathEl.textContent = ["~", ...parts].join("  /  ");
+          if (!backEl) return;
           if (segs.length === 0) {
             backEl.setAttribute("hidden", "");
           } else {

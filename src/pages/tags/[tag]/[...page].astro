@@ -1,16 +1,16 @@
 ---
 import { getCollection } from "astro:content";
 import type { GetStaticPathsOptions } from "astro";
-import Main from "@/layouts/Main.astro";
-import Layout from "@/layouts/Layout.astro";
-import Card from "@/components/Card.astro";
-import Pagination from "@/components/Pagination.astro";
+import BlogLayout from "@/layouts/BlogLayout.astro";
+import BlogHeader from "@/components/BlogHeader.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
 import getPostsByTag from "@/utils/getPostsByTag";
+import { getPath } from "@/utils/getPath";
+import { readingTime } from "@/utils/readingTime";
 import { SITE } from "@/config";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  const posts = await getCollection("blog");
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
   const tags = getUniqueTags(posts);
 
   return tags.flatMap(({ tag, tagName }) => {
@@ -24,22 +24,149 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   });
 }
 
-const params = Astro.params;
-const { tag } = params;
 const { page, tagName } = Astro.props;
+
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 ---
 
-<Layout title={`Tag: ${tagName} | ${SITE.title}`}>
-  <Main
-    pageTitle={[`Tag:`, `${tagName}`]}
-    titleTransition={tag}
-    pageDesc={`All the articles with the tag "${tagName}".`}
-  >
-    <h1 slot="title" transition:name={tag}>{`Tag:${tag}`}</h1>
-    <ul>
-      {page.data.map(data => <Card {...data} />)}
-    </ul>
-  </Main>
+<BlogLayout
+  title={`#${tagName} · ${SITE.blogTitle}`}
+  description={`Notes tagged ${tagName}.`}
+>
+  <main id="main-content" class="page">
+    <BlogHeader
+      title={`#${tagName}`}
+      tagline={`notes tagged ${tagName}`}
+      count={page.total}
+    />
 
-  <Pagination {page} />
-</Layout>
+    <div class="col">
+      <ol class="list">
+        {
+          page.data.map((post, i) => (
+            <li class="row rise" style={`--d: ${90 + i * 70}ms`}>
+              <a href={getPath(post.id, post.filePath)}>
+                <p class="meta mono">
+                  {fmt(post.data.pubDatetime)} · {readingTime(post.body)} min
+                </p>
+                <h2 class="t">{post.data.title}</h2>
+                {post.data.description && (
+                  <p class="dek">{post.data.description}</p>
+                )}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+
+      {
+        page.lastPage > 1 && (
+          <nav class="pager mono" aria-label="Pagination">
+            {page.url.prev ? (
+              <a href={page.url.prev}>← newer</a>
+            ) : (
+              <span class="off">← newer</span>
+            )}
+            <span class="pos">
+              {page.currentPage} / {page.lastPage}
+            </span>
+            {page.url.next ? (
+              <a href={page.url.next}>older →</a>
+            ) : (
+              <span class="off">older →</span>
+            )}
+          </nav>
+        )
+      }
+
+      <footer class="foot mono">
+        <a href="/tags/">~/ all tags</a>
+      </footer>
+    </div>
+  </main>
+</BlogLayout>
+
+<style>
+  .page {
+    padding-bottom: 5rem;
+    min-height: 80vh;
+  }
+  .list {
+    list-style: none;
+    margin: clamp(2rem, 6vh, 3rem) 0 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .row {
+    border-bottom: 1px solid var(--border);
+  }
+  .row a {
+    display: block;
+    padding: 1.8rem 0;
+    text-decoration: none;
+    color: var(--foreground);
+  }
+  .meta {
+    margin: 0;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .t {
+    margin: 0.55rem 0 0;
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.4rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    transition: color 0.18s;
+  }
+  .row a:hover .t {
+    color: var(--accent-ink);
+  }
+  .dek {
+    margin: 0.5rem 0 0;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2.4rem;
+    font-size: 0.8rem;
+  }
+  .pager a {
+    color: var(--accent-ink);
+    text-decoration: none;
+  }
+  .pager a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .pager .off {
+    color: var(--border);
+  }
+  .pager .pos {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .foot {
+    margin-top: 3rem;
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .foot a {
+    text-decoration: none;
+  }
+  .foot a:hover {
+    color: var(--accent-ink);
+  }
+</style>

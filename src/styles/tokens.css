@@ -1,0 +1,32 @@
+/* ─────────────────────────────────────────────────────────────
+   Design tokens for the DEV NOTES blog zone (BlogLayout.astro).
+   The hub zone (Layout.astro) keeps its own :root in global.css —
+   the palette values are identical; keep them in sync.
+   Never hardcode a hex/oklch color in a page or component.
+   See docs/DESIGN.md for the rules.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* palette — warm cream + ink + terracotta */
+  --background: oklch(0.963 0.012 84); /* page cream */
+  --panel: oklch(0.985 0.007 86); /* raised card / code block */
+  --foreground: oklch(0.225 0.018 58); /* ink text */
+  --ink: oklch(0.225 0.018 58); /* alias of foreground */
+  --accent: oklch(0.62 0.185 47); /* terracotta (decorative only) */
+  --accent-ink: oklch(0.53 0.16 46); /* terracotta, AA-safe for text */
+  --muted: oklch(0.5 0.022 64); /* secondary text */
+  --border: oklch(0.86 0.014 70); /* hairline rules */
+
+  /* type — serif reads, mono labels, sans only as fallback UI */
+  --serif: "Newsreader", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  /* structure */
+  --maxw: 680px; /* reading column (blog, about) */
+  --maxw-wide: 920px; /* home grid */
+  --radius: 8px; /* cards, inputs */
+  --radius-sm: 6px; /* code blocks, chips */
+
+  /* the one allowed "shadow": a faint terracotta offset tint */
+  --lift: 3px 3px 0 color-mix(in oklch, var(--accent) 12%, transparent);
+}

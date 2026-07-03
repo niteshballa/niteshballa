@@ -1,20 +1,90 @@
 ---
 import { getCollection } from "astro:content";
-import Main from "@/layouts/Main.astro";
-import Layout from "@/layouts/Layout.astro";
-import Tag from "@/components/Tag.astro";
+import BlogLayout from "@/layouts/BlogLayout.astro";
+import BlogHeader from "@/components/BlogHeader.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
+import getPostsByTag from "@/utils/getPostsByTag";
 import { SITE } from "@/config";
 
-const posts = await getCollection("blog");
-
-let tags = getUniqueTags(posts);
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+const tags = getUniqueTags(posts).map(({ tag, tagName }) => ({
+  tag,
+  tagName,
+  count: getPostsByTag(posts, tag).length,
+}));
 ---
 
-<Layout title={`Tags | ${SITE.title}`}>
-  <Main pageTitle="Tags" pageDesc="All the tags used in posts.">
-    <ul class="flex flex-wrap gap-6">
-      {tags.map(({ tag, tagName }) => <Tag {tag} {tagName} />)}
-    </ul>
-  </Main>
-</Layout>
+<BlogLayout
+  title={`Tags · ${SITE.blogTitle}`}
+  description="Topics across the notes."
+>
+  <main id="main-content" class="page">
+    <BlogHeader
+      title="Tags"
+      tagline="topics across the notes"
+      count={tags.length}
+    />
+
+    <div class="col body">
+      <ul class="taglist">
+        {
+          tags.map(({ tag, tagName, count }) => (
+            <li class="rise">
+              <a href={`/tags/${tag}/`}>
+                <span class="hash mono">#</span>
+                <span class="name">{tagName}</span>
+                <span class="count mono">{count}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </main>
+</BlogLayout>
+
+<style>
+  .page {
+    padding-bottom: 5rem;
+    min-height: 80vh;
+  }
+  .body {
+    margin-top: clamp(2rem, 6vh, 3rem);
+  }
+  .taglist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border);
+  }
+  .taglist li {
+    border-bottom: 1px solid var(--border);
+  }
+  .taglist a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 1rem 0;
+    text-decoration: none;
+    color: var(--foreground);
+  }
+  .hash {
+    color: var(--accent-ink);
+    font-size: 0.95rem;
+  }
+  .taglist .name {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    transition: color 0.18s;
+  }
+  .taglist a:hover .name {
+    color: var(--accent-ink);
+  }
+  .taglist .count {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

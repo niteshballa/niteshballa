@@ -2,116 +2,107 @@ import satori from "satori";
 import { SITE } from "@/config";
 import loadGoogleFonts from "../loadGoogleFont";
 
+// Dev Notes palette (sRGB equivalents of src/styles/tokens.css)
+const BG = "#f5f1e9";
+const INK = "#2a241e";
+const MUTED = "#7b726a";
+const ACCENT = "#c8612a";
+const BORDER = "#ddd5c7";
+
 export default async () => {
   return satori(
     {
       type: "div",
       props: {
         style: {
-          background: "#fefbfb",
+          background: BG,
           width: "100%",
           height: "100%",
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "64px 72px",
+          fontFamily: "Newsreader",
         },
         children: [
           {
             type: "div",
             props: {
               style: {
-                position: "absolute",
-                top: "-1px",
-                right: "-1px",
-                border: "4px solid #000",
-                background: "#ecebeb",
-                opacity: "0.9",
-                borderRadius: "4px",
                 display: "flex",
+                flexDirection: "column",
                 justifyContent: "center",
-                margin: "2.5rem",
-                width: "88%",
-                height: "80%",
+                flex: 1,
               },
+              children: [
+                {
+                  type: "div",
+                  props: {
+                    style: {
+                      display: "flex",
+                      alignItems: "baseline",
+                      gap: "18px",
+                    },
+                    children: [
+                      {
+                        type: "span",
+                        props: {
+                          style: {
+                            fontFamily: "IBM Plex Mono",
+                            fontSize: 44,
+                            color: ACCENT,
+                          },
+                          children: "~/",
+                        },
+                      },
+                      {
+                        type: "span",
+                        props: {
+                          style: {
+                            fontSize: 84,
+                            fontWeight: 600,
+                            letterSpacing: "-0.02em",
+                            color: INK,
+                          },
+                          children: SITE.title,
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  type: "p",
+                  props: {
+                    style: {
+                      fontFamily: "IBM Plex Mono",
+                      fontSize: 26,
+                      lineHeight: 1.5,
+                      color: MUTED,
+                      maxWidth: "80%",
+                      marginTop: "28px",
+                    },
+                    children:
+                      "dev notes on payments, infrastructure, and running software in production",
+                  },
+                },
+              ],
             },
           },
           {
             type: "div",
             props: {
               style: {
-                border: "4px solid #000",
-                background: "#fefbfb",
-                borderRadius: "4px",
                 display: "flex",
-                justifyContent: "center",
-                margin: "2rem",
-                width: "88%",
-                height: "80%",
+                justifyContent: "flex-end",
+                borderTop: `1px solid ${BORDER}`,
+                paddingTop: "28px",
+                fontFamily: "IBM Plex Mono",
+                fontSize: 24,
+                color: ACCENT,
               },
               children: {
-                type: "div",
-                props: {
-                  style: {
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    margin: "20px",
-                    width: "90%",
-                    height: "90%",
-                  },
-                  children: [
-                    {
-                      type: "div",
-                      props: {
-                        style: {
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          height: "90%",
-                          maxHeight: "90%",
-                          overflow: "hidden",
-                          textAlign: "center",
-                        },
-                        children: [
-                          {
-                            type: "p",
-                            props: {
-                              style: { fontSize: 72, fontWeight: "bold" },
-                              children: SITE.title,
-                            },
-                          },
-                          {
-                            type: "p",
-                            props: {
-                              style: { fontSize: 28 },
-                              children: SITE.desc,
-                            },
-                          },
-                        ],
-                      },
-                    },
-                    {
-                      type: "div",
-                      props: {
-                        style: {
-                          display: "flex",
-                          justifyContent: "flex-end",
-                          width: "100%",
-                          marginBottom: "8px",
-                          fontSize: 28,
-                        },
-                        children: {
-                          type: "span",
-                          props: {
-                            style: { overflow: "hidden", fontWeight: "bold" },
-                            children: new URL(SITE.website).hostname,
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
+                type: "span",
+                props: { children: new URL(SITE.website).hostname },
               },
             },
           },
@@ -122,7 +113,11 @@ export default async () => {
       width: 1200,
       height: 630,
       embedFont: true,
-      fonts: await loadGoogleFonts(SITE.title + SITE.desc + SITE.website),
+      fonts: await loadGoogleFonts(
+        SITE.title +
+          new URL(SITE.website).hostname +
+          "dev notes on payments, infrastructure, and running software in production ~/"
+      ),
     }
   );
 };

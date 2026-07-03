@@ -26,3 +26,5 @@ pnpm-debug.log*
 # pagefind
 
 public/pagefind
+# local Claude Code permission grants (machine-specific)
+.claude/settings.local.json

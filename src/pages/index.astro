@@ -1,49 +1,31 @@
 ---
-import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
-import getSortedPosts from "@/utils/getSortedPosts";
-import { getPath } from "@/utils/getPath";
 
-const posts = await getCollection("blog");
-const sortedPosts = getSortedPosts(posts);
-const recent = sortedPosts.slice(0, 3);
+const STACK = ["Rust", "TypeScript", "Kubernetes", "Postgres", "Terraform", "Grafana"];
 
-const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
+// Verified from the repo's info.md source-of-truth (recent → earlier).
+const EXPERIENCE = [
+  { co: "Manif", role: "Forward Deployed Engineer", when: "Now" },
+  { co: "GreenBanana", role: "Engineering Lead · Germany", when: "" },
+  { co: "Juspay", role: "Product Engineer · Hyperswitch", when: "" },
+  { co: "MAQ Software", role: "Engineer", when: "" },
+];
 ---
 
 <Layout>
   <main id="main-content" class="hub" data-layout="index">
     <div class="bento">
       <!-- intro / profile card -->
-      <a
-        class="b-card spot cell intro"
-        href="/about/"
-        transition:name="card-profile"
-      >
-        <div>
-          <h1>Nitesh<br />Balla</h1>
-          <p>
-            I build the systems that move money and stay up, then go make them
-            work in the real world.
-          </p>
-        </div>
-        <span class="enter">View profile →</span>
-      </a>
-
-      <!-- field notes / recent posts -->
-      <section class="b-card spot cell writing">
-        <span class="lbl">// Field notes</span>
-        <div class="list">
-          {
-            recent.map(post => (
-              <a href={`/${getPath(post.id, post.filePath)}`}>
-                <span class="t">{post.data.title}</span>
-                <span class="y">{post.data.pubDatetime.getFullYear()}</span>
-              </a>
-            ))
-          }
-        </div>
-        <a class="all" href="/posts/">All posts →</a>
+      <section class="b-card spot cell intro">
+        <span class="kicker">// profile</span>
+        <h1>Nitesh<br />Balla</h1>
+        <p>
+          I build the systems that move money and stay up — payment
+          orchestration, high-risk processing, and the infrastructure beneath it
+          — then embed with the people who depend on them. Backend and infra at
+          the core: distributed systems, Kubernetes, observability. Comfortable
+          across the stack when a problem needs it.
+        </p>
       </section>
 
       <!-- now -->
@@ -54,17 +36,50 @@ const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
         </div>
       </section>
 
-      <!-- accent quote -->
-      <section class="b-card cell accent">
-        <span class="q">"The unglamorous plumbing is the product."</span>
-      </section>
+      <!-- startup (half) -->
+      <a
+        class="b-card cell startup"
+        href="https://betterswitch.io"
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="lbl">// Startup</span>
+        <span class="big">betterswitch.io →</span>
+      </a>
 
-      <!-- stack -->
+      <!-- Dev Notes (half) — the notes are their own world (different design
+           zone), so open in a new tab like an external destination -->
+      <a class="b-card cell blog" href="/posts/" target="_blank" rel="noopener">
+        <span class="lbl">// Writing</span>
+        <span class="big">Dev Notes →</span>
+      </a>
+
+      <!-- stack (half) -->
       <section class="b-card spot cell stack">
         <span class="lbl">// Stack</span>
         <div class="chips">{STACK.map(s => <span>{s}</span>)}</div>
       </section>
 
+      <!-- quote (half) -->
+      <section class="b-card spot cell quote">
+        <span class="q">"The unglamorous plumbing is the product."</span>
+      </section>
+
+      <!-- experience -->
+      <section class="b-card spot cell exp">
+        <span class="lbl">// Experience</span>
+        <ul class="xp">
+          {
+            EXPERIENCE.map(job => (
+              <li>
+                <span class="co">{job.co}</span>
+                <span class="ro">{job.role}</span>
+                <span class="yr">{job.when}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
     </div>
   </main>
 </Layout>
@@ -97,25 +112,18 @@ const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
   /* intro */
   .intro {
     grid-column: span 2;
-    grid-row: span 2;
+    grid-row: span 3;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    gap: 1.2rem;
-    text-decoration: none;
+    justify-content: flex-start;
     color: inherit;
   }
-  .intro .enter {
+  .intro .kicker {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--accent-ink);
-    opacity: 0;
-    transition: opacity 0.16s;
-  }
-  .intro:hover .enter {
-    opacity: 1;
+    color: var(--muted);
   }
   .intro h1 {
     font-family: var(--font-app);
@@ -124,69 +132,95 @@ const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
     line-height: 0.86;
     letter-spacing: -0.04em;
     text-transform: uppercase;
-    margin: 0.7rem 0 0.3rem;
+    margin: 0.6rem 0 0.5rem;
+  }
+  .intro .role {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-ink);
+    letter-spacing: 0.02em;
+    max-width: none;
+    margin-bottom: 0.9rem;
   }
   .intro p {
     font-family: var(--font-app);
     font-weight: 500;
-    font-size: 1.02rem;
-    line-height: 1.3;
+    font-size: 1.08rem;
+    line-height: 1.55;
     color: var(--muted);
-    max-width: 30ch;
+    max-width: 42ch;
   }
 
-  /* writing */
-  .writing {
-    grid-column: span 2;
-    grid-row: span 3;
+  /* startup + blog — two compact half-width link cards, side by side */
+  .startup,
+  .blog {
+    grid-column: span 1;
     display: flex;
     flex-direction: column;
-  }
-  .writing .list {
-    margin-top: 0.7rem;
-    flex: 1;
-  }
-  .writing a {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.6rem;
+    gap: 0.5rem;
     text-decoration: none;
-    color: var(--foreground);
+  }
+  .startup .big,
+  .blog .big {
     font-family: var(--font-app);
-    font-weight: 500;
-    padding: 0.75rem 0;
-    border-bottom: 2px solid var(--ink);
-    transition:
-      color 0.12s,
-      padding 0.14s;
+    font-weight: 700;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    letter-spacing: -0.01em;
+    word-break: break-word;
   }
-  .writing .list a:last-child {
-    border-bottom: none;
+  .startup .lbl,
+  .blog .lbl {
+    color: var(--background);
+    opacity: 0.7;
   }
-  .writing a .t {
-    font-size: 0.98rem;
+  /* startup = terracotta, default ink shadow */
+  .startup {
+    background: var(--accent-ink);
+    color: var(--background);
   }
-  .writing a .y {
+  .startup:hover {
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  /* blog = black with an orange shadow */
+  .blog {
+    background: var(--ink);
+    color: var(--background);
+    box-shadow: 4px 4px 0 var(--accent);
+  }
+  .blog:hover {
+    box-shadow: 6px 6px 0 var(--accent);
+  }
+
+  /* stack (half) */
+  .stack {
+    grid-column: span 1;
+  }
+  .stack .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+  }
+  .stack .chips span {
     font-family: var(--font-mono);
-    font-size: 0.68rem;
-    color: var(--muted);
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+    border: 1.5px solid var(--ink);
+    padding: 0.16rem 0.5rem;
+    color: var(--foreground);
   }
-  .writing a:hover {
-    color: var(--accent-ink);
-    padding-left: 0.3rem;
+
+  /* quote (half) */
+  .quote {
+    grid-column: span 1;
+    display: flex;
+    align-items: center;
   }
-  .writing .all {
-    border: none;
-    padding: 0.6rem 0 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--muted);
-    justify-content: flex-start;
-  }
-  .writing .all:hover {
-    color: var(--accent-ink);
-    padding-left: 0.3rem;
+  .quote .q {
+    font-family: var(--font-app);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.3;
   }
 
   /* now */
@@ -204,52 +238,63 @@ const STACK = ["RUST", "REACT", "HYPERSWITCH", "K8S", "POSTGRES", "GRAFANA"];
     color: var(--accent);
   }
 
-  /* accent */
-  .accent {
-    grid-column: span 2;
-    background: var(--accent-ink);
-    color: var(--background);
+  /* experience — full-width horizontal timeline */
+  .exp {
+    grid-column: span 4;
+  }
+  .xp {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+  }
+  .xp li {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--ink);
   }
-  .accent:hover {
-    box-shadow: 6px 6px 0 var(--ink);
-  }
-  .accent .q {
+  .xp .co {
     font-family: var(--font-app);
-    font-weight: 600;
-    font-size: 1.15rem;
-    line-height: 1.2;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--foreground);
   }
-
-  /* stack */
-  .stack {
-    grid-column: span 2;
+  .xp .ro {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
   }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 0.55rem;
-  }
-  .chips span {
-    font-size: 0.66rem;
-    border: 2px solid var(--ink);
-    padding: 0.16rem 0.5rem;
-    font-weight: 500;
+  .xp .yr {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent-ink);
   }
 
   @media (max-width: 740px) {
     .bento {
       grid-template-columns: repeat(2, 1fr);
     }
+    /* full-width blocks; the half-cards (startup/blog/stack/quote) stay
+       span-1 so they keep pairing 2-up */
     .intro,
-    .writing,
     .now,
-    .accent,
-    .stack {
+    .exp {
       grid-column: 1 / -1;
       grid-row: auto;
+    }
+    .intro {
+      grid-row: auto;
+    }
+    .xp {
+      grid-template-columns: 1fr 1fr;
     }
   }
 </style>

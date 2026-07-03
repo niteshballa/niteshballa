@@ -1,188 +1,145 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
-import Layout from "@/layouts/Layout.astro";
-import Pagination from "@/components/Pagination.astro";
+import BlogLayout from "@/layouts/BlogLayout.astro";
+import BlogHeader from "@/components/BlogHeader.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 import { getPath } from "@/utils/getPath";
+import { readingTime } from "@/utils/readingTime";
 import { SITE } from "@/config";
 
 export const getStaticPaths = (async ({ paginate }) => {
   const posts = await getCollection("blog", ({ data }) => !data.draft);
-  return paginate(getSortedPosts(posts), { pageSize: SITE.postPerPage });
+  return paginate(getSortedPosts(posts), { pageSize: 100 });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
 
-const fmtDate = (d: Date) =>
-  d
-    .toLocaleDateString("en-US", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    })
-    .toUpperCase();
+const fmt = (d: Date) =>
+  d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 ---
 
-<Layout title={`Posts | ${SITE.title}`}>
-  <main id="main-content" class="ledger app-layout" data-backurl="/posts">
-    <header class="blog-head">
-      <h1>Field Notes</h1>
-      <p class="tagline">
-        Notes from production: payments, infrastructure, and the unglamorous
-        parts. <span class="count">[{page.total}]</span>
-      </p>
-    </header>
+<BlogLayout
+  title={`${SITE.blogTitle} · ${SITE.author}`}
+  description="Things I figured out, written down before I forget them."
+>
+  <main id="main-content" class="page">
+    <BlogHeader
+      tagline="things I figured out, written down before I forget them"
+    />
 
-    <ol class="index">
+    <div class="col">
       {
-        page.data.map((post, i) => {
-          const n = String((page.currentPage - 1) * page.size + i + 1).padStart(
-            2,
-            "0"
-          );
-          return (
-            <li class:list={["row", { featured: post.data.featured }]}>
-              <a href={`/${getPath(post.id, post.filePath)}`} class="entry">
-                <span class="no">{n}</span>
-                <span class="body">
-                  <span class="t">
-                    {post.data.featured && <span class="star">★</span>}
-                    {post.data.title}
-                  </span>
-                  <span class="tags">
-                    {post.data.tags.slice(0, 3).map(t => (
-                      <span>#{t}</span>
-                    ))}
-                  </span>
-                </span>
-                <span class="date">{fmtDate(post.data.pubDatetime)}</span>
-              </a>
-            </li>
-          );
-        })
+        page.data.length === 0 ? (
+          <p class="empty">No notes yet. Check back soon.</p>
+        ) : (
+          <ol class="list">
+            {page.data.map((post, i) => (
+              <li class="row rise" style={`--d: ${90 + i * 70}ms`}>
+                <a href={getPath(post.id, post.filePath)}>
+                  <p class="meta mono">
+                    {fmt(post.data.pubDatetime)} · {readingTime(post.body)} min
+                  </p>
+                  <h2 class="t">{post.data.title}</h2>
+                  {post.data.description && (
+                    <p class="dek">{post.data.description}</p>
+                  )}
+                  {post.data.tags?.length > 0 && (
+                    <p class="tags mono">
+                      {post.data.tags.slice(0, 3).map(tag => (
+                        <span>#{tag}</span>
+                      ))}
+                    </p>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ol>
+        )
       }
-    </ol>
-  </main>
 
-  <Pagination {page} />
-</Layout>
+      <footer class="foot mono">
+        <span>© {new Date().getFullYear()} {SITE.author}</span>
+        <a href="/rss.xml">RSS</a>
+      </footer>
+    </div>
+  </main>
+</BlogLayout>
 
 <style>
-  .ledger {
-    padding-block: clamp(1.2rem, 4vw, 2rem);
+  .page {
+    padding-bottom: 4rem;
+    min-height: 80vh;
   }
-
-  /* standalone blog header */
-  .blog-head {
-    margin-bottom: clamp(1.8rem, 5vw, 2.8rem);
-  }
-  .blog-head h1 {
-    font-family: var(--font-app);
-    font-weight: 700;
-    font-size: clamp(2.6rem, 8vw, 4.5rem);
-    line-height: 0.92;
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
-  }
-  .blog-head .tagline {
-    margin-top: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    line-height: 1.6;
-    color: var(--muted);
-    max-width: 52ch;
-  }
-  .blog-head .count {
-    color: var(--accent-ink);
-  }
-
-  .index {
+  .list {
     list-style: none;
-    margin: 0;
+    margin: 2.2rem 0 0;
     padding: 0;
-    border-top: 1.5px solid var(--ink);
+    border-top: 1px solid var(--border);
   }
-  .entry {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 1rem;
-    align-items: baseline;
+  .row {
+    border-bottom: 1px solid var(--border);
+  }
+  .row a {
+    display: block;
+    padding: 1.8rem 0;
     text-decoration: none;
     color: var(--foreground);
-    padding: 1.15rem 0.3rem;
-    border-bottom: 1.5px solid var(--border);
-    transition:
-      background 0.15s,
-      padding 0.15s;
   }
-  .entry:hover,
-  .entry:focus-visible {
-    background: var(--panel);
-    padding-inline: 0.6rem;
-    outline: none;
-  }
-  .no {
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: var(--accent-ink);
-  }
-  .body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    min-width: 0;
+  .meta {
+    margin: 0;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
   }
   .t {
-    font-family: var(--font-app);
-    font-weight: 600;
-    font-size: clamp(1.05rem, 2vw, 1.35rem);
-    line-height: 1.15;
+    margin: 0.55rem 0 0;
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 1.45rem;
+    line-height: 1.2;
     letter-spacing: -0.01em;
     color: var(--foreground);
+    transition: color 0.18s;
   }
-  .entry:hover .t,
-  .entry:focus-visible .t {
+  .row a:hover .t {
     color: var(--accent-ink);
   }
-  .star {
-    color: var(--accent-ink);
-    margin-right: 0.35rem;
-    font-size: 0.8em;
+  .dek {
+    margin: 0.5rem 0 0;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--muted);
   }
   .tags {
+    margin: 0.9rem 0 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    gap: 0.8rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--accent-ink);
   }
-  .date {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+  .empty {
+    margin: 2.5rem 0;
     color: var(--muted);
-    white-space: nowrap;
+    font-style: italic;
   }
-
-  @media (max-width: 560px) {
-    .entry {
-      grid-template-columns: auto 1fr;
-    }
-    .date {
-      grid-column: 2;
-      margin-top: 0.2rem;
-    }
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .foot a {
+    text-decoration: none;
+  }
+  .foot a:hover {
+    color: var(--accent-ink);
   }
 </style>
-
-<script>
-  document.addEventListener("astro:page-load", () => {
-    const main = document.querySelector("#main-content") as HTMLElement | null;
-    const backUrl = main?.dataset?.backurl;
-    if (backUrl) sessionStorage.setItem("backUrl", backUrl);
-  });
-</script>

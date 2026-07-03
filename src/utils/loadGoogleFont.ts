@@ -34,7 +34,14 @@ async function loadGoogleFonts(
 ): Promise<
   Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
 > {
+  // Matches the site's type system: Newsreader for titles, Plex Mono for labels.
   const fontsConfig = [
+    {
+      name: "Newsreader",
+      font: "Newsreader",
+      weight: 600,
+      style: "normal",
+    },
     {
       name: "IBM Plex Mono",
       font: "IBM+Plex+Mono",
@@ -44,8 +51,8 @@ async function loadGoogleFonts(
     {
       name: "IBM Plex Mono",
       font: "IBM+Plex+Mono",
-      weight: 700,
-      style: "bold",
+      weight: 500,
+      style: "normal",
     },
   ];
 
